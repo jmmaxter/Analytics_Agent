@@ -1,0 +1,16 @@
+# Environments
+.venv/
+__pycache__/
+.env
+
+# Data files (keep raw data local)
+# data/*.csv
+# data/*.xlsx
+# data/*.parquet
+
+# Render / OS files
+.DS_Store
+
+# Other files
+Notes/
+tests/

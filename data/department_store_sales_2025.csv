@@ -1,0 +1,601 @@
+Transaction_ID,Date,Region,Product_Category,Customer_Segment,Payment_Method,Revenue,Units_Sold,Unit_Cost,Profit,Discount_Applied,Store_Location,Sales_Rep,Marketing_Channel,Customer_Rating
+TXN-000358,2025-01-02,East,Apparel,Regular,Debit Card,843.0,12,33.72,438.36,0,"Philadelphia, PA",Jennifer Brown,Email,4
+TXN-000499,2025-01-02,Central,Electronics,Wholesale,Debit Card,5095.84,16,229.31,1426.88,0,"Omaha, NE",Daniel Jackson,TV,5
+TXN-000371,2025-01-03,East,Beauty,New,Mobile Payment,88.0,11,4.0,44.0,0,"Baltimore, MD",Maria Anderson,TV,5
+TXN-000021,2025-01-05,West,Office Supplies,Premium,Cash,514.85,17,18.51,200.18,0.1,"Los Angeles, CA",Patricia Lee,In-Store,3
+TXN-000260,2025-01-05,East,Beverages,Premium,Mobile Payment,453.92,16,17.02,181.6,0,"New York, NY",Ana Young,Referral,2
+TXN-000348,2025-01-05,South,Food,Regular,Cash,162.14,15,7.81,44.99,0.1,"Atlanta, GA",Michael Wilson,Social Media,3
+TXN-000382,2025-01-06,Central,Office Supplies,Regular,Cash,81.78,19,2.96,25.54,0.2,"St. Louis, MO",Daniel Jackson,Referral,4
+TXN-000509,2025-01-06,South,Apparel,New,Credit Card,872.28,10,46.52,407.08,0.1,"Dallas, TX",Carlos Brown,Referral,4
+TXN-000052,2025-01-07,West,Office Supplies,Premium,Mobile Payment,249.39,12,15.24,66.51,0.25,"Denver, CO",Daniel Clark,Referral,5
+TXN-000352,2025-01-07,Central,Food,Wholesale,Debit Card,380.19,23,10.74,133.17,0,"St. Louis, MO",Jennifer Brown,Social Media,4
+TXN-000459,2025-01-07,South,Office Supplies,New,Gift Card,623.28,21,16.32,280.56,0,"Orlando, FL",Linda Smith,Online Ads,4
+TXN-000584,2025-01-07,West,Beauty,Regular,Mobile Payment,255.04,8,15.94,127.52,0,"Seattle, WA",Linda Clark,Social Media,3
+TXN-000081,2025-01-08,South,Beauty,Wholesale,Credit Card,81.17,9,5.3,33.47,0.15,"Orlando, FL",Patricia Jackson,Social Media,5
+TXN-000092,2025-01-08,East,Groceries,Wholesale,Cash,425.3,24,13.39,103.94,0.1,"New York, NY",Carlos Brown,Referral,3
+TXN-000206,2025-01-08,South,Office Supplies,Premium,Gift Card,854.44,25,25.06,227.94,0.25,"Atlanta, GA",Linda Jackson,Email,4
+TXN-000257,2025-01-09,North,Groceries,Premium,Cash,318.0,14,16.26,90.36,0.05,"Minneapolis, MN",Daniel Clark,Flyer,4
+TXN-000318,2025-01-11,East,Apparel,Premium,Debit Card,653.44,16,19.6,339.84,0,"Philadelphia, PA",David Clark,Referral,5
+TXN-000340,2025-01-12,Central,Office Supplies,Wholesale,Cash,501.9,21,13.14,225.96,0,"St. Louis, MO",Linda White,TV,5
+TXN-000466,2025-01-12,East,Office Supplies,Premium,Cash,61.8,12,2.83,27.84,0,"Boston, MA",Elizabeth Garcia,TV,3
+TXN-000488,2025-01-14,Central,Sports & Outdoors,Premium,Credit Card,1342.24,8,102.43,522.8,0.05,"Omaha, NE",Elizabeth Garcia,In-Store,5
+TXN-000436,2025-01-15,North,Food,Wholesale,Debit Card,353.7,15,17.03,98.25,0.1,"Detroit, MI",Linda Jackson,TV,3
+TXN-000048,2025-01-16,South,Electronics,Wholesale,Credit Card,3224.72,8,290.22,902.96,0,"Atlanta, GA",Karen Martinez,Email,5
+TXN-000490,2025-01-17,West,Apparel,Premium,Credit Card,870.35,8,54.97,430.59,0.05,"Los Angeles, CA",Daniel Clark,Online Ads,5
+TXN-000212,2025-01-18,North,Electronics,Regular,Debit Card,5874.08,21,212.0,1422.08,0.05,"Chicago, IL",Ana Lewis,Email,5
+TXN-000465,2025-01-18,East,Toys,New,Debit Card,204.3,10,11.24,91.9,0,"New York, NY",Daniel Jackson,Flyer,4
+TXN-000072,2025-01-19,West,Food,Regular,Gift Card,29.02,4,5.9,5.42,0.2,"Los Angeles, CA",James Garcia,Online Ads,1
+TXN-000094,2025-01-20,East,Office Supplies,Wholesale,Mobile Payment,153.72,18,4.7,69.12,0,"Baltimore, MD",Elizabeth Garcia,Referral,5
+TXN-000378,2025-01-20,North,Electronics,Premium,Cash,1553.04,9,124.24,434.88,0,"Chicago, IL",James Clark,Online Ads,5
+TXN-000144,2025-01-22,East,Toys,New,Credit Card,602.64,18,24.55,160.74,0.25,"Philadelphia, PA",Linda White,Referral,3
+TXN-000393,2025-01-22,South,Beverages,Regular,Cash,297.75,15,11.91,119.1,0,"Dallas, TX",Carlos Brown,Referral,5
+TXN-000274,2025-01-23,North,Electronics,Premium,Credit Card,4229.16,13,234.23,1184.17,0,"Minneapolis, MN",John Taylor,Flyer,4
+TXN-000380,2025-01-24,North,Toys,Regular,Cash,351.65,22,9.77,136.71,0.1,"Detroit, MI",Linda White,Online Ads,4
+TXN-000341,2025-01-25,Central,Office Supplies,Regular,Mobile Payment,40.25,1,22.14,18.11,0,"Kansas City, MO",James Garcia,Online Ads,2
+TXN-000428,2025-01-25,West,Beauty,Regular,Mobile Payment,64.12,9,4.75,21.37,0.25,"Los Angeles, CA",Linda Smith,Social Media,4
+TXN-000596,2025-01-25,South,Apparel,New,Debit Card,360.9,6,28.87,187.68,0,"Dallas, TX",Daniel Clark,Flyer,3
+TXN-000307,2025-01-26,West,Beauty,Regular,Cash,7.27,1,4.54,2.73,0.2,"Denver, CO",Michael Wilson,Referral,5
+TXN-000472,2025-01-26,Central,Apparel,Premium,Debit Card,263.3,17,9.29,105.37,0.2,"Oklahoma City, OK",Jennifer Brown,TV,3
+TXN-000501,2025-01-26,South,Electronics,Regular,Gift Card,839.4,2,302.18,235.04,0,"Atlanta, GA",Michael Wilson,TV,4
+TXN-000107,2025-01-27,East,Food,Premium,Mobile Payment,79.14,17,3.19,24.91,0.05,"Philadelphia, PA",Daniel Lewis,Flyer,2
+TXN-000384,2025-01-28,Central,Toys,New,Credit Card,324.06,22,8.1,145.86,0,"Oklahoma City, OK",Daniel Jackson,Referral,5
+TXN-000273,2025-01-29,West,Food,Regular,Debit Card,160.0,25,4.16,56.0,0,"Seattle, WA",Linda Smith,TV,1
+TXN-000399,2025-01-29,South,Beauty,New,Credit Card,568.75,13,21.88,284.31,0,"Dallas, TX",Daniel Jackson,Online Ads,5
+TXN-000270,2025-01-30,South,Beverages,New,Debit Card,128.2,20,3.85,51.2,0,"Houston, TX",Carlos Brown,In-Store,3
+TXN-000189,2025-02-01,North,Apparel,Regular,Cash,545.89,22,13.23,254.83,0.1,"Milwaukee, WI",Elizabeth Garcia,TV,3
+TXN-000192,2025-02-01,Central,Sports & Outdoors,Wholesale,Credit Card,856.54,6,97.41,272.08,0.15,"St. Louis, MO",Linda Clark,Email,5
+TXN-000291,2025-02-01,North,Beverages,Regular,Mobile Payment,47.95,7,4.33,17.64,0.05,"Detroit, MI",Maria Anderson,Referral,4
+TXN-000483,2025-02-01,East,Electronics,Premium,Cash,4881.62,9,411.08,1181.9,0.05,"Baltimore, MD",Patricia Lee,Online Ads,3
+TXN-000255,2025-02-02,Central,Home & Garden,New,Cash,1272.34,7,145.41,254.47,0.25,"Oklahoma City, OK",Michael Wilson,Social Media,4
+TXN-000567,2025-02-02,South,Food,New,Credit Card,474.62,24,16.07,88.94,0.2,"Orlando, FL",Linda Clark,TV,5
+TXN-000062,2025-02-03,West,Office Supplies,Premium,Debit Card,789.58,22,19.74,355.3,0,"Denver, CO",Maria Anderson,TV,4
+TXN-000156,2025-02-03,East,Groceries,Regular,Debit Card,544.6,25,18.52,81.6,0.2,"Baltimore, MD",David Garcia,Referral,2
+TXN-000504,2025-02-04,West,Apparel,New,Gift Card,222.44,4,29.66,103.8,0.1,"Los Angeles, CA",James Clark,TV,3
+TXN-000077,2025-02-05,East,Food,Regular,Cash,430.85,17,18.3,119.75,0.1,"Baltimore, MD",Linda Smith,Social Media,5
+TXN-000012,2025-02-06,Central,Apparel,Wholesale,Debit Card,585.13,7,40.12,304.29,0,"St. Louis, MO",Maria Anderson,Online Ads,4
+TXN-000266,2025-02-06,Central,Food,Wholesale,Cash,112.6,5,18.3,21.1,0.2,"Kansas City, MO",John Taylor,Referral,3
+TXN-000576,2025-02-06,South,Sports & Outdoors,New,Debit Card,2397.06,14,104.53,933.64,0.05,"Orlando, FL",Linda White,In-Store,4
+TXN-000233,2025-02-07,West,Sports & Outdoors,Regular,Cash,1757.53,17,74.95,483.38,0.2,"Denver, CO",Linda Jackson,Flyer,5
+TXN-000389,2025-02-08,North,Sports & Outdoors,Regular,Gift Card,4274.76,25,104.39,1665.01,0.05,"Chicago, IL",David Anderson,TV,5
+TXN-000220,2025-02-09,East,Sports & Outdoors,Wholesale,Debit Card,923.01,13,48.45,293.16,0.15,"Boston, MA",Maria Anderson,Referral,2
+TXN-000543,2025-02-09,East,Beauty,Regular,Credit Card,414.56,9,25.59,184.25,0.1,"Philadelphia, PA",Kevin Young,Email,5
+TXN-000042,2025-02-11,South,Home & Garden,Regular,Mobile Payment,484.17,5,61.16,178.37,0.05,"Atlanta, GA",James Clark,Social Media,5
+TXN-000136,2025-02-11,East,Electronics,Premium,Debit Card,835.45,4,176.92,127.77,0.15,"Boston, MA",Ana Wilson,Social Media,5
+TXN-000405,2025-02-12,East,Apparel,Regular,Gift Card,708.17,23,14.78,368.23,0,"Baltimore, MD",Ana Lewis,Online Ads,3
+TXN-000063,2025-02-13,South,Toys,Wholesale,Mobile Payment,1488.27,20,43.08,626.67,0.05,"Houston, TX",Patricia Lopez,Online Ads,4
+TXN-000125,2025-02-13,Central,Electronics,Premium,Cash,2349.34,15,150.36,93.94,0.25,"St. Louis, MO",Elizabeth Garcia,Social Media,4
+TXN-000311,2025-02-13,East,Sports & Outdoors,Wholesale,Gift Card,127.74,2,46.31,35.12,0.2,"Baltimore, MD",Linda Clark,Flyer,5
+TXN-000435,2025-02-13,West,Home & Garden,Premium,Debit Card,520.35,10,41.63,104.05,0.25,"Phoenix, AZ",Jennifer Davis,Flyer,3
+TXN-000263,2025-02-14,North,Office Supplies,Wholesale,Cash,404.54,13,20.14,142.72,0.15,"Minneapolis, MN",Maria Anderson,Email,3
+TXN-000484,2025-02-14,West,Beverages,New,Gift Card,44.52,5,6.68,11.12,0.2,"Seattle, WA",David Garcia,Online Ads,5
+TXN-000581,2025-02-14,West,Home & Garden,Regular,Mobile Payment,2051.73,15,91.19,683.88,0.1,"Denver, CO",Linda Smith,Flyer,3
+TXN-000481,2025-02-15,South,Toys,Regular,Debit Card,1744.92,18,53.32,785.16,0,"Atlanta, GA",Patricia Lopez,TV,4
+TXN-000111,2025-02-16,Central,Beverages,New,Cash,197.45,11,10.77,78.98,0,"St. Louis, MO",Linda Smith,Social Media,5
+TXN-000135,2025-02-16,South,Food,Wholesale,Gift Card,392.7,14,18.23,137.48,0,"Orlando, FL",Elizabeth Garcia,Email,4
+TXN-000224,2025-02-16,North,Groceries,Premium,Credit Card,173.52,9,13.11,55.53,0,"Detroit, MI",Daniel Clark,Online Ads,5
+TXN-000346,2025-02-16,Central,Office Supplies,Wholesale,Cash,1088.67,21,30.01,458.46,0.05,"Kansas City, MO",David Anderson,Online Ads,1
+TXN-000414,2025-02-16,Central,Toys,New,Debit Card,940.24,12,50.7,331.84,0.15,"Omaha, NE",Kevin Young,Email,5
+TXN-000217,2025-02-17,West,Beverages,Premium,Credit Card,46.0,2,13.8,18.4,0,"Denver, CO",Jennifer Brown,Flyer,4
+TXN-000258,2025-02-17,East,Office Supplies,Regular,Mobile Payment,508.2,21,13.31,228.69,0,"Philadelphia, PA",Laura Anderson,Social Media,3
+TXN-000280,2025-02-17,North,Toys,Regular,Gift Card,414.0,12,25.3,110.4,0.25,"Minneapolis, MN",Carlos Brown,TV,3
+TXN-000373,2025-02-17,East,Home & Garden,New,Debit Card,1582.02,11,101.52,465.3,0.15,"Boston, MA",Linda White,TV,5
+TXN-000403,2025-02-17,West,Sports & Outdoors,Wholesale,Cash,134.96,1,97.85,37.11,0.2,"Seattle, WA",Patricia Jackson,In-Store,5
+TXN-000566,2025-02-19,West,Sports & Outdoors,Wholesale,Gift Card,132.92,4,19.27,55.84,0,"Seattle, WA",Maria Anderson,TV,3
+TXN-000083,2025-02-20,North,Beauty,New,Credit Card,57.05,1,28.52,28.53,0,"Milwaukee, WI",David Clark,Social Media,4
+TXN-000130,2025-02-21,Central,Food,Wholesale,Debit Card,530.8,20,17.25,185.8,0,"Kansas City, MO",Daniel Clark,Email,5
+TXN-000347,2025-02-21,South,Apparel,Wholesale,Credit Card,927.89,22,23.82,403.85,0.15,"Houston, TX",Carlos Brown,Flyer,1
+TXN-000409,2025-02-21,South,Food,Premium,Mobile Payment,488.4,20,15.87,171.0,0,"Orlando, FL",Laura Anderson,In-Store,2
+TXN-000061,2025-02-22,North,Groceries,Regular,Cash,274.78,11,16.99,87.89,0,"Detroit, MI",Patricia Jackson,Online Ads,2
+TXN-000249,2025-02-22,South,Electronics,Wholesale,Credit Card,3766.32,12,225.98,1054.56,0,"Dallas, TX",Linda White,Flyer,3
+TXN-000261,2025-02-22,East,Apparel,Premium,Credit Card,627.0,25,12.04,326.0,0,"Philadelphia, PA",Jennifer Davis,TV,1
+TXN-000434,2025-02-22,North,Groceries,Regular,Credit Card,22.66,1,19.26,3.4,0.2,"Chicago, IL",David Anderson,TV,3
+TXN-000520,2025-02-22,South,Toys,Premium,Debit Card,167.85,5,20.52,65.25,0.1,"Dallas, TX",Ana Young,Social Media,5
+TXN-000526,2025-02-22,West,Food,Wholesale,Mobile Payment,47.44,3,11.42,13.18,0.1,"Los Angeles, CA",Karen Martinez,Online Ads,3
+TXN-000359,2025-02-24,East,Home & Garden,Wholesale,Debit Card,481.4,13,23.39,177.33,0.05,"Boston, MA",Linda Jackson,Social Media,2
+TXN-000462,2025-02-24,Central,Groceries,Premium,Debit Card,500.08,14,24.29,160.02,0,"Omaha, NE",John Taylor,Online Ads,5
+TXN-000014,2025-02-25,South,Home & Garden,Premium,Cash,554.84,5,83.23,138.69,0.2,"Atlanta, GA",James Garcia,Email,2
+TXN-000480,2025-02-25,North,Beverages,New,Mobile Payment,140.14,13,6.47,56.03,0,"Detroit, MI",Patricia Jackson,TV,5
+TXN-000533,2025-02-26,East,Home & Garden,New,Mobile Payment,1726.87,19,68.17,431.64,0.2,"New York, NY",Elizabeth Young,Online Ads,4
+TXN-000006,2025-02-27,East,Beauty,Premium,Gift Card,843.05,24,19.52,374.57,0.1,"Baltimore, MD",Patricia Lopez,In-Store,4
+TXN-000449,2025-02-27,South,Food,Wholesale,Debit Card,21.78,9,1.57,7.65,0,"Orlando, FL",Ana Lewis,In-Store,5
+TXN-000574,2025-02-27,South,Groceries,Regular,Cash,230.12,22,7.11,73.7,0,"Orlando, FL",David Clark,Email,4
+TXN-000349,2025-02-28,West,Groceries,Wholesale,Debit Card,146.74,13,10.23,13.75,0.25,"Denver, CO",Carlos Brown,Email,1
+TXN-000375,2025-02-28,West,Toys,Wholesale,Mobile Payment,63.42,1,41.04,22.38,0.15,"Phoenix, AZ",Ana Wilson,Social Media,3
+TXN-000589,2025-02-28,West,Home & Garden,New,Credit Card,625.75,9,52.15,156.4,0.2,"Seattle, WA",Ana Young,Social Media,4
+TXN-000517,2025-03-01,North,Electronics,New,Mobile Payment,8745.4,20,314.83,2448.8,0,"Detroit, MI",Patricia Lee,In-Store,2
+TXN-000272,2025-03-02,North,Beverages,Regular,Mobile Payment,33.32,3,7.4,11.12,0.1,"Detroit, MI",James Garcia,TV,4
+TXN-000284,2025-03-03,North,Apparel,Premium,Cash,2320.7,23,48.43,1206.81,0,"Minneapolis, MN",Carlos Taylor,In-Store,3
+TXN-000097,2025-03-04,West,Home & Garden,Regular,Cash,3280.2,20,98.41,1312.0,0,"Los Angeles, CA",Daniel Lewis,Email,5
+TXN-000158,2025-03-05,Central,Apparel,New,Gift Card,293.75,11,13.49,145.36,0.05,"St. Louis, MO",Patricia Lee,Social Media,2
+TXN-000103,2025-03-06,East,Beverages,Wholesale,Gift Card,608.94,17,23.88,202.98,0.1,"Philadelphia, PA",Kevin Young,Online Ads,2
+TXN-000009,2025-03-07,West,Apparel,Premium,Gift Card,1088.64,20,32.66,435.44,0.2,"Seattle, WA",Linda White,Referral,3
+TXN-000034,2025-03-07,South,Beverages,Wholesale,Gift Card,149.8,6,16.64,49.96,0.1,"Orlando, FL",Michael Wilson,In-Store,4
+TXN-000025,2025-03-08,East,Groceries,Regular,Credit Card,398.72,14,19.37,127.54,0,"Boston, MA",Patricia Lee,Referral,3
+TXN-000099,2025-03-08,Central,Beauty,Regular,Cash,13.24,1,6.62,6.62,0,"Omaha, NE",Maria Anderson,Flyer,3
+TXN-000287,2025-03-08,South,Food,New,Credit Card,445.62,21,13.79,156.03,0,"Orlando, FL",Ana Lewis,In-Store,3
+TXN-000297,2025-03-08,East,Food,Regular,Gift Card,18.35,5,2.39,6.4,0,"Boston, MA",Patricia Jackson,Social Media,2
+TXN-000485,2025-03-09,South,Sports & Outdoors,New,Gift Card,1185.03,7,98.19,497.7,0,"Atlanta, GA",Patricia Lopez,Email,4
+TXN-000023,2025-03-10,East,Office Supplies,New,Gift Card,203.94,5,24.93,79.29,0.1,"New York, NY",Daniel Jackson,Referral,4
+TXN-000363,2025-03-10,South,Sports & Outdoors,New,Gift Card,4633.2,24,124.41,1647.36,0.1,"Orlando, FL",Laura Anderson,Email,3
+TXN-000489,2025-03-10,Central,Food,Wholesale,Debit Card,69.71,13,4.65,9.26,0.25,"Oklahoma City, OK",Daniel Clark,Email,3
+TXN-000535,2025-03-10,North,Electronics,Premium,Credit Card,1982.46,16,111.51,198.3,0.2,"Chicago, IL",Carlos Taylor,Referral,4
+TXN-000495,2025-03-11,West,Food,Premium,Mobile Payment,65.79,6,9.5,8.79,0.25,"Denver, CO",Ana Young,Social Media,4
+TXN-000004,2025-03-12,Central,Office Supplies,Premium,Mobile Payment,184.32,4,25.34,82.96,0,"Oklahoma City, OK",Kevin Young,In-Store,4
+TXN-000151,2025-03-12,Central,Beverages,Regular,Credit Card,119.27,9,8.37,43.94,0.05,"Omaha, NE",Linda Smith,Email,5
+TXN-000568,2025-03-12,East,Electronics,Regular,Cash,4272.4,11,279.65,1196.25,0,"Boston, MA",Carlos Taylor,Flyer,4
+TXN-000155,2025-03-13,South,Electronics,Wholesale,Gift Card,4322.87,19,192.72,661.19,0.15,"Orlando, FL",Carlos Taylor,TV,2
+TXN-000237,2025-03-14,East,Food,New,Mobile Payment,77.44,7,9.59,10.31,0.25,"Philadelphia, PA",Carlos Brown,Online Ads,5
+TXN-000003,2025-03-15,East,Home & Garden,Wholesale,Gift Card,3058.56,18,113.28,1019.52,0.1,"Boston, MA",Elizabeth Young,Social Media,3
+TXN-000334,2025-03-15,East,Office Supplies,New,Credit Card,646.59,21,16.93,291.06,0,"Boston, MA",Ana Lewis,Online Ads,4
+TXN-000209,2025-03-16,North,Toys,New,Debit Card,1428.8,19,51.7,446.5,0.2,"Detroit, MI",Daniel Jackson,Social Media,3
+TXN-000410,2025-03-16,West,Office Supplies,Regular,Gift Card,45.22,8,3.66,15.94,0.15,"Denver, CO",Ana Wilson,Referral,4
+TXN-000486,2025-03-16,Central,Food,Premium,Cash,70.2,18,2.54,24.48,0,"St. Louis, MO",Michael Wilson,Email,1
+TXN-000127,2025-03-18,East,Sports & Outdoors,Wholesale,Debit Card,2204.6,12,118.4,783.8,0.1,"New York, NY",Kevin Young,Referral,2
+TXN-000353,2025-03-18,Central,Electronics,Wholesale,Debit Card,1865.57,6,298.49,74.63,0.25,"Kansas City, MO",Ana Young,Flyer,5
+TXN-000544,2025-03-19,West,Beauty,Wholesale,Debit Card,537.29,23,12.29,254.62,0.05,"Phoenix, AZ",Maria Anderson,TV,1
+TXN-000198,2025-03-21,East,Office Supplies,Regular,Debit Card,85.18,22,2.66,26.66,0.2,"Boston, MA",Daniel Jackson,In-Store,2
+TXN-000511,2025-03-21,West,Groceries,New,Gift Card,554.82,14,26.95,177.52,0,"Phoenix, AZ",Linda Smith,Referral,4
+TXN-000065,2025-03-22,South,Toys,Wholesale,Gift Card,11.93,1,8.2,3.73,0.2,"Atlanta, GA",Jennifer Brown,Social Media,1
+TXN-000413,2025-03-22,North,Beverages,Premium,Gift Card,160.37,13,9.25,40.12,0.2,"Detroit, MI",Ana Lewis,Referral,2
+TXN-000350,2025-03-23,North,Sports & Outdoors,Premium,Gift Card,2173.98,19,88.48,492.86,0.25,"Milwaukee, WI",Elizabeth Young,Flyer,4
+TXN-000305,2025-03-24,North,Food,Regular,Mobile Payment,279.45,20,12.11,37.25,0.25,"Chicago, IL",Laura Anderson,Email,5
+TXN-000398,2025-03-24,West,Home & Garden,Premium,Gift Card,386.65,19,12.21,154.66,0,"Los Angeles, CA",Ana Wilson,TV,3
+TXN-000597,2025-03-24,South,Electronics,Wholesale,Cash,11338.44,19,429.67,3174.71,0,"Houston, TX",Elizabeth Garcia,Email,3
+TXN-000304,2025-03-25,West,Electronics,Regular,Credit Card,2310.16,11,168.01,462.05,0.1,"Los Angeles, CA",David Garcia,Email,4
+TXN-000498,2025-03-25,South,Electronics,New,Debit Card,2236.35,10,214.69,89.45,0.25,"Atlanta, GA",Carlos Brown,Email,3
+TXN-000045,2025-03-26,West,Sports & Outdoors,Regular,Mobile Payment,2173.99,13,96.99,913.12,0,"Seattle, WA",Carlos Taylor,Flyer,5
+TXN-000131,2025-03-26,West,Beverages,Wholesale,Gift Card,361.15,24,9.5,133.15,0.05,"Los Angeles, CA",David Clark,Flyer,5
+TXN-000283,2025-03-26,West,Food,Premium,Mobile Payment,204.71,18,8.7,48.11,0.15,"Denver, CO",David Clark,Online Ads,4
+TXN-000148,2025-03-27,West,Groceries,New,Credit Card,38.69,12,2.74,5.81,0.2,"Phoenix, AZ",Ana Young,Referral,4
+TXN-000303,2025-03-27,West,Beverages,Wholesale,Gift Card,199.55,13,9.21,79.82,0,"Denver, CO",Laura Anderson,Flyer,3
+TXN-000313,2025-03-27,South,Beauty,Premium,Debit Card,19.68,3,4.1,7.38,0.2,"Atlanta, GA",Michael Wilson,TV,4
+TXN-000401,2025-03-27,East,Sports & Outdoors,Wholesale,Debit Card,1173.25,8,106.33,322.61,0.2,"Baltimore, MD",Carlos Brown,In-Store,3
+TXN-000542,2025-03-28,Central,Apparel,New,Mobile Payment,1979.6,20,47.51,1029.4,0,"Kansas City, MO",Ana Young,Email,5
+TXN-000569,2025-03-28,East,Groceries,Premium,Credit Card,260.11,19,9.31,83.22,0,"Boston, MA",Maria Anderson,Flyer,5
+TXN-000243,2025-03-30,East,Beauty,Regular,Debit Card,205.13,8,14.24,91.21,0.1,"New York, NY",Elizabeth Garcia,Referral,3
+TXN-000321,2025-03-30,South,Electronics,New,Debit Card,3145.95,15,151.01,880.8,0,"Atlanta, GA",David Anderson,Social Media,5
+TXN-000430,2025-03-31,East,Food,Regular,Mobile Payment,250.2,16,13.55,33.4,0.25,"Philadelphia, PA",Kevin Young,Social Media,5
+TXN-000060,2025-04-02,East,Toys,New,Debit Card,39.3,2,10.81,17.68,0,"New York, NY",Laura Anderson,Flyer,5
+TXN-000215,2025-04-02,North,Toys,New,Cash,136.71,7,11.94,53.13,0.1,"Chicago, IL",Maria Anderson,Online Ads,2
+TXN-000147,2025-04-03,Central,Food,New,Mobile Payment,48.21,11,3.17,13.34,0.1,"Omaha, NE",Kevin Young,Referral,4
+TXN-000046,2025-04-04,North,Beverages,New,Mobile Payment,184.11,15,8.66,54.21,0.15,"Detroit, MI",David Anderson,Flyer,4
+TXN-000146,2025-04-06,West,Food,Regular,Mobile Payment,426.56,17,18.12,118.52,0.1,"Denver, CO",Ana Young,Online Ads,5
+TXN-000186,2025-04-06,North,Apparel,Premium,Gift Card,1720.92,25,34.78,851.42,0.05,"Detroit, MI",Patricia Jackson,Referral,4
+TXN-000240,2025-04-06,West,Electronics,Wholesale,Mobile Payment,2433.06,7,333.68,97.3,0.25,"Denver, CO",Ana Lewis,Referral,3
+TXN-000310,2025-04-06,West,Apparel,New,Gift Card,499.06,9,28.02,246.88,0.05,"Los Angeles, CA",Ana Wilson,Email,2
+TXN-000370,2025-04-06,South,Beverages,Premium,Debit Card,28.67,9,2.12,9.59,0.1,"Houston, TX",Karen Martinez,Flyer,4
+TXN-000073,2025-04-07,Central,Sports & Outdoors,Regular,Debit Card,3631.79,21,133.74,823.25,0.25,"Omaha, NE",David Anderson,TV,3
+TXN-000442,2025-04-07,North,Beauty,Wholesale,Cash,420.84,21,13.36,140.28,0.25,"Minneapolis, MN",Linda Jackson,TV,5
+TXN-000443,2025-04-07,East,Beauty,Premium,Credit Card,156.96,18,4.36,78.48,0,"New York, NY",David Clark,Social Media,3
+TXN-000591,2025-04-07,West,Office Supplies,Regular,Credit Card,136.46,6,13.9,53.06,0.1,"Los Angeles, CA",Daniel Clark,Social Media,2
+TXN-000013,2025-04-08,North,Beverages,Regular,Credit Card,162.33,14,9.28,32.41,0.25,"Chicago, IL",Ana Wilson,Online Ads,4
+TXN-000337,2025-04-08,North,Home & Garden,Premium,Credit Card,694.44,12,38.58,231.48,0.1,"Chicago, IL",Elizabeth Young,TV,5
+TXN-000059,2025-04-09,South,Apparel,Regular,Debit Card,2018.25,25,43.06,941.75,0.1,"Orlando, FL",David Clark,Email,4
+TXN-000573,2025-04-09,North,Sports & Outdoors,Wholesale,Debit Card,2805.82,25,68.52,1092.82,0.05,"Chicago, IL",David Anderson,In-Store,3
+TXN-000038,2025-04-10,West,Beverages,Regular,Mobile Payment,236.67,21,6.76,94.71,0,"Denver, CO",Daniel Lewis,Email,5
+TXN-000246,2025-04-10,West,Beverages,Wholesale,Debit Card,294.21,14,16.81,58.87,0.25,"Denver, CO",Ana Young,TV,1
+TXN-000278,2025-04-11,Central,Beauty,Premium,Gift Card,76.72,14,2.74,38.36,0,"St. Louis, MO",Elizabeth Garcia,Referral,1
+TXN-000037,2025-04-12,South,Electronics,Wholesale,Mobile Payment,3317.12,16,149.27,928.8,0,"Houston, TX",Patricia Lee,Referral,5
+TXN-000087,2025-04-12,West,Office Supplies,New,Cash,266.8,19,9.09,94.09,0.15,"Denver, CO",Ana Lewis,Flyer,4
+TXN-000170,2025-04-12,Central,Toys,New,Mobile Payment,23.4,2,6.44,10.52,0,"Oklahoma City, OK",Jennifer Davis,Online Ads,3
+TXN-000344,2025-04-12,Central,Apparel,Wholesale,Cash,603.69,7,48.7,262.79,0.15,"St. Louis, MO",Daniel Clark,In-Store,5
+TXN-000153,2025-04-13,North,Office Supplies,Regular,Cash,496.28,23,15.82,132.42,0.25,"Minneapolis, MN",Linda Clark,Social Media,2
+TXN-000476,2025-04-13,East,Office Supplies,Premium,Cash,17.88,2,5.18,7.52,0.05,"Boston, MA",Ana Lewis,Social Media,2
+TXN-000556,2025-04-13,Central,Beauty,Wholesale,Debit Card,213.64,4,26.7,106.84,0,"Oklahoma City, OK",Kevin Young,Referral,2
+TXN-000515,2025-04-14,North,Toys,Premium,Cash,164.64,16,5.66,74.08,0,"Milwaukee, WI",Patricia Lopez,Online Ads,5
+TXN-000024,2025-04-15,East,Apparel,Wholesale,Cash,219.18,2,52.6,113.98,0,"Baltimore, MD",Ana Wilson,In-Store,4
+TXN-000269,2025-04-15,South,Beverages,New,Mobile Payment,607.0,25,14.57,242.75,0,"Dallas, TX",Linda Smith,Flyer,3
+TXN-000367,2025-04-15,Central,Food,Wholesale,Debit Card,94.2,4,16.11,29.76,0.05,"Kansas City, MO",Jennifer Davis,Flyer,4
+TXN-000098,2025-04-16,North,Sports & Outdoors,Premium,Gift Card,520.54,8,44.4,165.34,0.15,"Minneapolis, MN",Ana Lewis,Social Media,3
+TXN-000241,2025-04-16,East,Sports & Outdoors,New,Cash,792.0,18,25.52,332.64,0,"New York, NY",Daniel Jackson,Online Ads,2
+TXN-000250,2025-04-18,Central,Sports & Outdoors,Premium,Debit Card,1172.04,6,113.3,492.24,0,"Omaha, NE",Maria Anderson,In-Store,5
+TXN-000335,2025-04-18,South,Groceries,Premium,Gift Card,992.25,25,26.99,317.5,0,"Atlanta, GA",James Clark,Referral,4
+TXN-000364,2025-04-18,Central,Food,New,Credit Card,138.95,5,18.06,48.65,0,"Omaha, NE",Linda White,Social Media,5
+TXN-000383,2025-04-19,West,Beauty,Premium,Credit Card,338.4,20,9.4,150.4,0.1,"Seattle, WA",Daniel Clark,Referral,5
+TXN-000200,2025-04-22,North,Toys,New,Debit Card,675.92,8,54.67,238.56,0.15,"Minneapolis, MN",David Clark,Email,5
+TXN-000190,2025-04-23,South,Beauty,Wholesale,Gift Card,665.04,20,19.56,273.84,0.15,"Orlando, FL",Patricia Lopez,Online Ads,5
+TXN-000247,2025-04-23,East,Apparel,Wholesale,Gift Card,347.3,10,16.67,180.6,0,"New York, NY",Linda Smith,Flyer,5
+TXN-000201,2025-04-24,West,Apparel,Wholesale,Gift Card,317.49,19,8.02,165.11,0,"Phoenix, AZ",Jennifer Brown,In-Store,4
+TXN-000197,2025-04-25,North,Apparel,Wholesale,Debit Card,1169.86,24,29.25,467.86,0.2,"Chicago, IL",Daniel Lewis,Online Ads,4
+TXN-000275,2025-04-25,East,Beverages,Regular,Gift Card,364.32,11,22.08,121.44,0.1,"Boston, MA",Elizabeth Garcia,In-Store,5
+TXN-000357,2025-04-25,West,Toys,New,Mobile Payment,1179.0,20,43.23,314.4,0.25,"Phoenix, AZ",Carlos Brown,In-Store,3
+TXN-000577,2025-04-27,North,Beverages,Regular,Mobile Payment,432.99,13,21.04,159.47,0.05,"Minneapolis, MN",Karen Martinez,Online Ads,1
+TXN-000066,2025-04-29,East,Groceries,Premium,Mobile Payment,39.02,8,3.69,9.5,0.1,"Philadelphia, PA",Carlos Brown,TV,3
+TXN-000461,2025-04-29,Central,Home & Garden,Premium,Gift Card,1177.71,22,33.81,433.89,0.05,"Oklahoma City, OK",Linda Smith,TV,4
+TXN-000132,2025-04-30,Central,Apparel,New,Gift Card,1766.54,16,55.79,873.9,0.05,"St. Louis, MO",James Garcia,Online Ads,4
+TXN-000467,2025-04-30,East,Office Supplies,Regular,Cash,641.14,19,19.54,269.88,0.05,"Philadelphia, PA",Maria Anderson,Online Ads,3
+TXN-000120,2025-05-01,North,Apparel,Regular,Debit Card,634.0,20,15.22,329.6,0,"Minneapolis, MN",Linda White,Referral,5
+TXN-000207,2025-05-03,Central,Apparel,New,Cash,793.61,18,24.9,345.41,0.15,"Omaha, NE",Elizabeth Garcia,TV,5
+TXN-000239,2025-05-05,Central,Toys,Wholesale,Debit Card,327.31,18,12.5,102.31,0.2,"St. Louis, MO",Maria Anderson,Online Ads,3
+TXN-000177,2025-05-07,East,Home & Garden,Premium,Mobile Payment,2123.64,10,141.58,707.84,0.1,"Philadelphia, PA",David Garcia,Online Ads,4
+TXN-000253,2025-05-07,West,Beauty,Wholesale,Mobile Payment,347.83,9,24.16,130.39,0.2,"Denver, CO",Ana Young,Referral,2
+TXN-000582,2025-05-07,East,Sports & Outdoors,Regular,Mobile Payment,1489.41,19,45.47,625.48,0,"Baltimore, MD",Ana Wilson,In-Store,5
+TXN-000286,2025-05-08,North,Office Supplies,Regular,Credit Card,244.1,5,26.85,109.85,0,"Milwaukee, WI",Michael Wilson,Flyer,3
+TXN-000302,2025-05-08,North,Apparel,Regular,Mobile Payment,2317.68,24,46.35,1205.28,0,"Detroit, MI",James Garcia,Referral,4
+TXN-000069,2025-05-09,North,Home & Garden,New,Gift Card,4576.34,19,144.52,1830.46,0,"Chicago, IL",Ana Wilson,Flyer,3
+TXN-000089,2025-05-09,South,Electronics,New,Debit Card,3609.75,15,173.27,1010.7,0,"Houston, TX",Ana Young,Social Media,4
+TXN-000159,2025-05-09,South,Beauty,Premium,Gift Card,1037.6,20,25.94,518.8,0,"Dallas, TX",Karen Martinez,Email,3
+TXN-000575,2025-05-09,East,Electronics,Premium,Credit Card,268.6,2,96.7,75.2,0,"Baltimore, MD",Jennifer Brown,TV,2
+TXN-000047,2025-05-10,North,Electronics,Premium,Credit Card,798.13,2,338.03,122.07,0.15,"Milwaukee, WI",Linda White,Referral,1
+TXN-000326,2025-05-10,South,Apparel,Regular,Credit Card,1351.84,20,40.56,540.64,0.2,"Orlando, FL",Jennifer Davis,Referral,4
+TXN-000408,2025-05-10,East,Beverages,Premium,Mobile Payment,659.12,22,17.98,263.56,0,"Philadelphia, PA",Maria Anderson,Referral,3
+TXN-000115,2025-05-11,East,Office Supplies,Premium,Debit Card,66.05,24,1.89,20.69,0.2,"Philadelphia, PA",Elizabeth Young,TV,3
+TXN-000524,2025-05-13,East,Beauty,New,Mobile Payment,1074.69,22,28.73,442.63,0.15,"Baltimore, MD",Jennifer Brown,In-Store,2
+TXN-000020,2025-05-14,South,Home & Garden,Wholesale,Cash,331.88,5,44.25,110.63,0.1,"Dallas, TX",Patricia Lopez,Flyer,2
+TXN-000031,2025-05-14,South,Electronics,New,Mobile Payment,1622.8,14,98.19,248.14,0.15,"Dallas, TX",Kevin Young,TV,2
+TXN-000188,2025-05-14,West,Groceries,Regular,Cash,377.98,11,25.96,92.42,0.1,"Seattle, WA",Laura Anderson,Social Media,3
+TXN-000328,2025-05-14,East,Beauty,Wholesale,Cash,350.4,8,21.9,175.2,0,"Boston, MA",Linda Clark,Email,1
+TXN-000242,2025-05-15,West,Sports & Outdoors,New,Cash,1634.88,13,72.94,686.66,0,"Phoenix, AZ",Patricia Jackson,Online Ads,5
+TXN-000420,2025-05-16,South,Home & Garden,Premium,Credit Card,3576.63,20,126.23,1052.03,0.15,"Atlanta, GA",Carlos Brown,In-Store,5
+TXN-000294,2025-05-17,Central,Home & Garden,Premium,Debit Card,1637.28,13,88.9,481.58,0.15,"Kansas City, MO",Daniel Lewis,TV,4
+TXN-000002,2025-05-18,North,Sports & Outdoors,Wholesale,Mobile Payment,2766.74,11,153.56,1077.58,0.05,"Minneapolis, MN",Patricia Lee,Referral,5
+TXN-000058,2025-05-19,East,Home & Garden,Regular,Gift Card,231.81,7,23.38,68.15,0.15,"Philadelphia, PA",Linda White,Referral,3
+TXN-000180,2025-05-19,Central,Beauty,Premium,Credit Card,300.73,24,6.59,142.57,0.05,"Omaha, NE",Linda Clark,TV,3
+TXN-000343,2025-05-19,Central,Beverages,New,Credit Card,134.24,4,20.14,53.68,0,"St. Louis, MO",Maria Anderson,In-Store,5
+TXN-000579,2025-05-19,South,Beauty,New,Debit Card,140.79,19,3.71,70.3,0,"Dallas, TX",Carlos Brown,Flyer,5
+TXN-000088,2025-05-21,North,Sports & Outdoors,New,Debit Card,2160.01,10,131.87,841.31,0.05,"Chicago, IL",Laura Anderson,Email,5
+TXN-000264,2025-05-22,North,Toys,Regular,Cash,1367.06,24,34.81,531.62,0.1,"Minneapolis, MN",Daniel Jackson,TV,5
+TXN-000555,2025-05-22,North,Beverages,New,Debit Card,26.35,2,8.78,8.79,0.1,"Milwaukee, WI",James Garcia,In-Store,5
+TXN-000290,2025-05-24,West,Electronics,New,Mobile Payment,7587.46,20,287.52,1837.06,0.05,"Seattle, WA",James Clark,TV,5
+TXN-000422,2025-05-24,West,Sports & Outdoors,Wholesale,Gift Card,701.08,17,29.9,192.78,0.2,"Seattle, WA",Ana Wilson,TV,4
+TXN-000539,2025-05-24,West,Toys,Wholesale,Credit Card,256.13,3,49.43,107.84,0.05,"Los Angeles, CA",Linda Clark,Referral,5
+TXN-000035,2025-05-27,South,Sports & Outdoors,Wholesale,Mobile Payment,1550.18,11,108.98,351.4,0.25,"Orlando, FL",Linda Clark,Email,5
+TXN-000145,2025-05-27,East,Food,Wholesale,Mobile Payment,92.64,12,6.27,17.4,0.2,"New York, NY",Patricia Lee,Online Ads,4
+TXN-000167,2025-05-27,Central,Office Supplies,Wholesale,Cash,210.83,9,15.16,74.39,0.15,"Kansas City, MO",Ana Wilson,Online Ads,1
+TXN-000268,2025-05-27,Central,Beverages,New,Credit Card,86.01,3,17.2,34.41,0,"Oklahoma City, OK",David Clark,In-Store,5
+TXN-000412,2025-05-27,South,Sports & Outdoors,Premium,Credit Card,3507.14,23,93.1,1365.84,0.05,"Houston, TX",Elizabeth Garcia,Email,1
+TXN-000074,2025-05-28,West,Office Supplies,Premium,Cash,92.77,21,2.56,39.01,0.05,"Denver, CO",John Taylor,In-Store,5
+TXN-000086,2025-05-28,Central,Office Supplies,Wholesale,Cash,304.34,12,15.5,118.34,0.1,"St. Louis, MO",James Garcia,Flyer,4
+TXN-000179,2025-05-29,North,Office Supplies,Wholesale,Debit Card,306.99,15,12.51,119.34,0.1,"Detroit, MI",Daniel Jackson,Flyer,5
+TXN-000332,2025-05-31,West,Groceries,Wholesale,Debit Card,96.18,21,3.11,30.87,0,"Los Angeles, CA",Jennifer Davis,In-Store,4
+TXN-000554,2025-05-31,West,Groceries,New,Cash,333.29,9,31.48,49.97,0.2,"Los Angeles, CA",Daniel Clark,Flyer,2
+TXN-000091,2025-06-01,East,Groceries,Wholesale,Gift Card,229.04,5,32.79,65.09,0.05,"New York, NY",Elizabeth Garcia,In-Store,4
+TXN-000162,2025-06-02,West,Electronics,Wholesale,Debit Card,1703.1,14,116.78,68.18,0.25,"Los Angeles, CA",David Garcia,TV,3
+TXN-000203,2025-06-03,South,Electronics,Wholesale,Debit Card,5214.16,14,268.16,1459.92,0,"Orlando, FL",David Anderson,Email,4
+TXN-000338,2025-06-06,South,Electronics,New,Mobile Payment,1763.02,10,169.25,70.52,0.25,"Houston, TX",Patricia Lee,Referral,3
+TXN-000388,2025-06-06,West,Beauty,Premium,Gift Card,144.23,3,26.71,64.1,0.1,"Los Angeles, CA",Daniel Jackson,Social Media,2
+TXN-000477,2025-06-06,West,Electronics,Premium,Gift Card,5758.82,24,181.86,1394.18,0.05,"Denver, CO",Jennifer Davis,Flyer,4
+TXN-000008,2025-06-07,South,Home & Garden,Wholesale,Credit Card,662.16,3,132.43,264.87,0,"Houston, TX",Linda White,TV,3
+TXN-000128,2025-06-08,Central,Food,Wholesale,Gift Card,544.94,22,16.1,190.74,0,"Oklahoma City, OK",Elizabeth Garcia,In-Store,4
+TXN-000129,2025-06-08,South,Food,Premium,Debit Card,433.66,16,18.54,137.02,0.05,"Atlanta, GA",Carlos Taylor,In-Store,4
+TXN-000516,2025-06-08,East,Office Supplies,Premium,Credit Card,847.62,17,27.42,381.48,0,"Boston, MA",James Garcia,Online Ads,5
+TXN-000010,2025-06-09,West,Groceries,Premium,Debit Card,677.7,15,30.72,216.9,0,"Phoenix, AZ",Ana Young,Social Media,1
+TXN-000050,2025-06-09,Central,Beverages,Premium,Credit Card,264.46,7,22.67,105.77,0,"Oklahoma City, OK",Linda Jackson,Flyer,4
+TXN-000105,2025-06-10,West,Apparel,Regular,Credit Card,191.89,5,24.56,69.09,0.25,"Phoenix, AZ",Michael Wilson,In-Store,2
+TXN-000163,2025-06-10,East,Beverages,New,Debit Card,83.64,12,4.18,33.48,0,"Philadelphia, PA",James Garcia,In-Store,4
+TXN-000165,2025-06-10,South,Groceries,New,Mobile Payment,560.36,15,33.87,52.31,0.25,"Atlanta, GA",Ana Lewis,In-Store,4
+TXN-000387,2025-06-10,South,Beverages,New,Mobile Payment,150.12,12,7.51,60.0,0,"Atlanta, GA",James Garcia,Online Ads,4
+TXN-000419,2025-06-10,East,Sports & Outdoors,Wholesale,Debit Card,2090.53,24,53.18,814.21,0.05,"Boston, MA",Daniel Lewis,Referral,3
+TXN-000432,2025-06-10,East,Apparel,Wholesale,Cash,896.1,13,36.76,418.22,0.1,"Philadelphia, PA",Linda Smith,TV,5
+TXN-000551,2025-06-10,Central,Electronics,Regular,Gift Card,409.98,1,368.99,40.99,0.2,"Kansas City, MO",Carlos Brown,Referral,5
+TXN-000238,2025-06-13,North,Electronics,New,Credit Card,2005.2,4,360.94,561.44,0,"Detroit, MI",Linda Clark,Flyer,3
+TXN-000314,2025-06-13,North,Beverages,New,Gift Card,354.04,18,13.88,104.2,0.15,"Chicago, IL",James Garcia,Flyer,1
+TXN-000470,2025-06-13,Central,Food,Regular,Mobile Payment,128.56,8,10.45,44.96,0,"St. Louis, MO",James Garcia,Flyer,5
+TXN-000487,2025-06-13,West,Apparel,Premium,Debit Card,1110.0,21,28.19,518.01,0.1,"Denver, CO",Carlos Brown,Email,3
+TXN-000319,2025-06-14,East,Sports & Outdoors,Premium,Mobile Payment,1044.64,7,115.41,236.77,0.25,"Baltimore, MD",Linda Smith,Online Ads,5
+TXN-000354,2025-06-14,South,Apparel,Wholesale,Debit Card,99.46,8,7.46,39.78,0.2,"Dallas, TX",Ana Young,Online Ads,5
+TXN-000376,2025-06-14,Central,Office Supplies,Regular,Debit Card,313.5,25,6.9,141.0,0,"Kansas City, MO",Linda Clark,Referral,3
+TXN-000448,2025-06-15,South,Toys,New,Debit Card,377.53,9,30.76,100.69,0.25,"Houston, TX",Elizabeth Garcia,In-Store,3
+TXN-000464,2025-06-15,Central,Sports & Outdoors,New,Mobile Payment,1994.85,13,98.89,709.28,0.1,"St. Louis, MO",James Garcia,Online Ads,1
+TXN-000474,2025-06-15,Central,Office Supplies,New,Debit Card,491.35,14,22.71,173.41,0.15,"Kansas City, MO",David Garcia,Social Media,5
+TXN-000176,2025-06-16,West,Food,New,Cash,367.07,15,18.71,86.42,0.15,"Denver, CO",Kevin Young,Online Ads,3
+TXN-000277,2025-06-17,North,Electronics,Premium,Mobile Payment,2446.56,10,195.72,489.36,0.1,"Milwaukee, WI",Elizabeth Garcia,TV,5
+TXN-000530,2025-06-17,West,Office Supplies,Premium,Debit Card,77.0,5,8.47,34.65,0,"Los Angeles, CA",James Garcia,TV,4
+TXN-000229,2025-06-18,West,Beverages,New,Cash,692.79,21,19.79,277.2,0,"Phoenix, AZ",Kevin Young,Referral,3
+TXN-000235,2025-06-19,West,Electronics,Wholesale,Cash,997.73,8,94.52,241.57,0.05,"Los Angeles, CA",Elizabeth Young,Online Ads,5
+TXN-000301,2025-06-19,North,Food,New,Mobile Payment,177.06,6,19.18,61.98,0,"Minneapolis, MN",Ana Lewis,Social Media,3
+TXN-000502,2025-06-19,North,Office Supplies,New,Gift Card,160.62,6,14.72,72.3,0,"Chicago, IL",Linda Clark,Referral,5
+TXN-000541,2025-06-19,West,Apparel,New,Credit Card,75.26,2,20.07,35.12,0.1,"Phoenix, AZ",Laura Anderson,Online Ads,5
+TXN-000071,2025-06-20,East,Beauty,New,Mobile Payment,513.01,23,14.87,171.0,0.25,"New York, NY",Michael Wilson,Flyer,5
+TXN-000482,2025-06-20,West,Beauty,New,Cash,119.31,22,3.19,49.13,0.15,"Denver, CO",Daniel Lewis,TV,4
+TXN-000560,2025-06-20,East,Electronics,New,Gift Card,8584.38,21,294.32,2403.66,0,"Baltimore, MD",Patricia Jackson,Social Media,2
+TXN-000279,2025-06-21,North,Apparel,Wholesale,Mobile Payment,346.09,17,10.29,171.16,0.05,"Milwaukee, WI",Ana Wilson,Email,4
+TXN-000463,2025-06-22,South,Food,New,Mobile Payment,417.23,18,17.73,98.09,0.15,"Orlando, FL",Linda White,Referral,4
+TXN-000110,2025-06-23,East,Beauty,Regular,Debit Card,1067.65,19,35.12,400.37,0.2,"New York, NY",Linda Smith,Referral,1
+TXN-000119,2025-06-23,South,Beauty,Premium,Cash,225.33,21,5.37,112.56,0,"Dallas, TX",Elizabeth Garcia,Referral,3
+TXN-000513,2025-06-23,West,Sports & Outdoors,New,Cash,1125.72,6,108.82,472.8,0,"Seattle, WA",Linda Jackson,In-Store,4
+TXN-000521,2025-06-23,Central,Electronics,Regular,Mobile Payment,2362.24,16,106.3,661.44,0,"Oklahoma City, OK",Ana Wilson,In-Store,4
+TXN-000510,2025-06-24,West,Beauty,Wholesale,Credit Card,161.29,11,9.78,53.71,0.25,"Los Angeles, CA",Laura Anderson,Email,5
+TXN-000330,2025-06-25,South,Food,New,Credit Card,97.2,6,10.53,34.02,0,"Orlando, FL",Jennifer Brown,Email,4
+TXN-000339,2025-06-25,West,Home & Garden,Premium,Debit Card,644.41,13,29.74,257.79,0,"Phoenix, AZ",Linda Smith,Email,3
+TXN-000425,2025-06-25,East,Groceries,New,Mobile Payment,265.97,14,15.2,53.17,0.15,"Boston, MA",David Anderson,Online Ads,3
+TXN-000545,2025-06-25,North,Sports & Outdoors,Wholesale,Mobile Payment,1054.39,5,163.08,238.99,0.25,"Minneapolis, MN",Daniel Lewis,Referral,5
+TXN-000142,2025-06-26,South,Sports & Outdoors,Regular,Cash,2469.83,11,130.23,1037.3,0,"Houston, TX",John Taylor,Social Media,3
+TXN-000323,2025-06-26,South,Office Supplies,Premium,Gift Card,250.25,13,10.59,112.58,0,"Dallas, TX",Linda White,Email,3
+TXN-000439,2025-06-26,East,Toys,New,Credit Card,105.24,16,4.82,28.12,0.25,"Baltimore, MD",Linda White,Online Ads,4
+TXN-000469,2025-06-28,West,Office Supplies,Wholesale,Credit Card,420.64,8,28.92,189.28,0,"Denver, CO",David Clark,TV,1
+TXN-000108,2025-06-29,Central,Office Supplies,Wholesale,Gift Card,838.78,19,25.56,353.14,0.05,"Omaha, NE",Linda White,Flyer,5
+TXN-000251,2025-06-29,Central,Sports & Outdoors,New,Gift Card,1668.65,11,97.76,593.29,0.1,"Omaha, NE",David Anderson,Flyer,5
+TXN-000552,2025-06-29,South,Apparel,Regular,Gift Card,31.24,1,15.0,16.24,0,"Dallas, TX",Linda Clark,Flyer,3
+TXN-000140,2025-06-30,South,Beauty,Regular,Gift Card,139.82,3,27.41,57.59,0.15,"Orlando, FL",John Taylor,TV,5
+TXN-000285,2025-07-02,West,Apparel,Wholesale,Mobile Payment,231.72,6,18.54,120.48,0,"Los Angeles, CA",John Taylor,Referral,5
+TXN-000027,2025-07-03,South,Office Supplies,Premium,Debit Card,333.5,18,12.74,104.18,0.2,"Atlanta, GA",Patricia Jackson,Email,3
+TXN-000372,2025-07-03,North,Toys,Premium,Mobile Payment,169.44,6,15.53,76.26,0,"Detroit, MI",John Taylor,TV,4
+TXN-000429,2025-07-04,East,Food,Premium,Gift Card,8.7,4,1.66,2.06,0.15,"Philadelphia, PA",Karen Martinez,Referral,5
+TXN-000150,2025-07-05,West,Sports & Outdoors,New,Mobile Payment,748.81,15,34.06,237.91,0.15,"Los Angeles, CA",Linda White,In-Store,5
+TXN-000149,2025-07-06,Central,Electronics,Regular,Debit Card,2313.75,20,111.06,92.55,0.25,"St. Louis, MO",Ana Young,Email,4
+TXN-000231,2025-07-06,North,Sports & Outdoors,Wholesale,Debit Card,1795.32,6,173.55,754.02,0,"Minneapolis, MN",James Garcia,Flyer,4
+TXN-000538,2025-07-07,North,Sports & Outdoors,Wholesale,Credit Card,1832.76,12,88.58,769.8,0,"Chicago, IL",Carlos Taylor,Referral,5
+TXN-000123,2025-07-08,East,Office Supplies,Wholesale,Gift Card,517.62,17,20.93,161.81,0.2,"New York, NY",John Taylor,Flyer,1
+TXN-000022,2025-07-09,East,Groceries,Regular,Gift Card,869.81,23,28.57,212.7,0.1,"Boston, MA",David Clark,Referral,2
+TXN-000445,2025-07-10,West,Food,Regular,Cash,106.25,25,2.76,37.25,0,"Los Angeles, CA",Linda White,Online Ads,2
+TXN-000216,2025-07-11,West,Sports & Outdoors,New,Credit Card,1842.17,23,48.9,717.47,0.05,"Denver, CO",Laura Anderson,Flyer,1
+TXN-000298,2025-07-11,West,Food,Wholesale,Mobile Payment,52.25,5,6.79,18.3,0,"Los Angeles, CA",Laura Anderson,Social Media,3
+TXN-000320,2025-07-11,North,Office Supplies,Premium,Gift Card,281.93,17,11.4,88.13,0.2,"Minneapolis, MN",Patricia Lee,TV,1
+TXN-000570,2025-07-12,South,Groceries,Regular,Gift Card,5.87,1,3.99,1.88,0,"Houston, TX",Patricia Lee,Social Media,4
+TXN-000196,2025-07-13,West,Toys,Premium,Gift Card,242.88,12,11.13,109.32,0,"Los Angeles, CA",Elizabeth Young,TV,3
+TXN-000441,2025-07-13,South,Office Supplies,New,Gift Card,194.9,8,14.89,75.78,0.1,"Dallas, TX",Maria Anderson,Social Media,4
+TXN-000082,2025-07-14,East,Toys,New,Debit Card,32.21,3,6.22,13.55,0.05,"Baltimore, MD",Linda Smith,In-Store,4
+TXN-000210,2025-07-14,Central,Groceries,New,Mobile Payment,531.64,22,19.33,106.38,0.15,"St. Louis, MO",Linda Smith,Referral,5
+TXN-000005,2025-07-15,Central,Toys,Regular,Gift Card,560.34,18,17.12,252.18,0,"Oklahoma City, OK",Linda White,Social Media,4
+TXN-000029,2025-07-15,North,Home & Garden,New,Debit Card,738.23,15,34.74,217.13,0.15,"Milwaukee, WI",Daniel Lewis,In-Store,3
+TXN-000133,2025-07-15,Central,Beauty,New,Credit Card,1325.4,20,33.13,662.8,0,"Oklahoma City, OK",Laura Anderson,Online Ads,4
+TXN-000032,2025-07-17,Central,Apparel,Premium,Cash,208.32,14,7.14,108.36,0,"St. Louis, MO",James Clark,In-Store,4
+TXN-000080,2025-07-17,South,Electronics,Regular,Mobile Payment,2352.25,19,104.87,359.72,0.15,"Orlando, FL",Carlos Brown,TV,5
+TXN-000447,2025-07-17,West,Electronics,Premium,Mobile Payment,4405.68,24,132.17,1233.6,0,"Seattle, WA",Elizabeth Young,Referral,4
+TXN-000226,2025-07-18,North,Sports & Outdoors,Premium,Debit Card,2877.78,22,94.84,791.3,0.2,"Minneapolis, MN",David Anderson,Social Media,4
+TXN-000456,2025-07-18,South,Toys,Wholesale,Cash,188.53,10,12.2,66.53,0.15,"Orlando, FL",Carlos Brown,In-Store,5
+TXN-000044,2025-07-19,West,Groceries,Regular,Mobile Payment,131.56,14,8.52,12.28,0.25,"Seattle, WA",David Garcia,Referral,4
+TXN-000531,2025-07-19,Central,Home & Garden,New,Mobile Payment,587.66,11,35.62,195.84,0.1,"Oklahoma City, OK",Linda Jackson,Social Media,2
+TXN-000522,2025-07-20,South,Sports & Outdoors,Regular,Mobile Payment,1215.86,11,67.48,473.58,0.05,"Orlando, FL",Karen Martinez,Email,2
+TXN-000282,2025-07-21,East,Groceries,Premium,Gift Card,42.89,3,10.23,12.2,0.05,"Philadelphia, PA",Carlos Brown,Email,2
+TXN-000423,2025-07-21,South,Office Supplies,Regular,Credit Card,545.7,15,23.54,192.6,0.15,"Orlando, FL",Linda Clark,Email,4
+TXN-000381,2025-07-22,North,Beauty,New,Debit Card,180.04,5,22.5,67.54,0.2,"Milwaukee, WI",David Clark,Referral,4
+TXN-000309,2025-07-23,West,Apparel,Premium,Cash,288.43,18,9.61,115.45,0.2,"Denver, CO",Patricia Lee,Online Ads,4
+TXN-000391,2025-07-23,East,Home & Garden,Premium,Mobile Payment,4270.4,20,128.11,1708.2,0,"New York, NY",Daniel Clark,Email,5
+TXN-000030,2025-07-24,East,Office Supplies,Wholesale,Gift Card,444.54,9,31.96,156.9,0.15,"Philadelphia, PA",David Garcia,In-Store,2
+TXN-000547,2025-07-24,West,Groceries,Wholesale,Mobile Payment,898.22,25,25.72,255.22,0.05,"Phoenix, AZ",Jennifer Brown,Social Media,3
+TXN-000411,2025-07-25,Central,Sports & Outdoors,Wholesale,Mobile Payment,784.5,25,18.2,329.5,0,"Omaha, NE",Ana Lewis,Email,5
+TXN-000019,2025-07-26,North,Sports & Outdoors,Wholesale,Gift Card,3688.8,20,106.98,1549.2,0,"Minneapolis, MN",Karen Martinez,TV,4
+TXN-000254,2025-07-26,Central,Food,Regular,Credit Card,200.33,16,9.57,47.21,0.15,"Omaha, NE",Linda Smith,Online Ads,4
+TXN-000336,2025-07-26,West,Beverages,New,Credit Card,37.28,18,1.31,13.7,0.05,"Denver, CO",Patricia Lee,Social Media,5
+TXN-000415,2025-07-26,Central,Apparel,Regular,Gift Card,497.25,17,14.04,258.57,0,"Kansas City, MO",David Clark,Social Media,2
+TXN-000564,2025-07-27,North,Toys,Premium,Credit Card,1103.74,22,27.59,496.76,0,"Minneapolis, MN",Ana Wilson,Referral,3
+TXN-000056,2025-07-28,West,Groceries,Regular,Credit Card,396.0,16,22.44,36.96,0.25,"Seattle, WA",David Clark,Email,4
+TXN-000075,2025-07-28,North,Office Supplies,Wholesale,Cash,117.2,4,16.12,52.72,0,"Minneapolis, MN",Jennifer Davis,Referral,4
+TXN-000182,2025-07-28,West,Home & Garden,New,Credit Card,1627.07,10,114.85,478.57,0.15,"Denver, CO",Patricia Lopez,Flyer,2
+TXN-000126,2025-07-29,East,Food,New,Cash,12.32,4,2.5,2.32,0.2,"New York, NY",Linda Smith,Flyer,5
+TXN-000214,2025-07-30,North,Toys,Regular,Gift Card,1205.93,18,40.94,469.01,0.1,"Chicago, IL",Michael Wilson,Referral,4
+TXN-000028,2025-07-31,North,Food,New,Debit Card,318.0,14,15.54,100.44,0.05,"Minneapolis, MN",Maria Anderson,Referral,2
+TXN-000514,2025-07-31,North,Home & Garden,New,Debit Card,942.21,10,59.51,347.11,0.05,"Milwaukee, WI",Carlos Brown,Social Media,1
+TXN-000076,2025-08-01,West,Home & Garden,Premium,Gift Card,478.52,5,71.78,119.62,0.2,"Denver, CO",Jennifer Davis,Referral,3
+TXN-000090,2025-08-01,South,Beauty,Premium,Cash,691.09,12,32.0,307.09,0.1,"Atlanta, GA",Patricia Lopez,Flyer,5
+TXN-000360,2025-08-01,North,Groceries,Wholesale,Credit Card,455.05,19,16.29,145.54,0,"Chicago, IL",Jennifer Davis,Referral,1
+TXN-000095,2025-08-03,Central,Beverages,New,Credit Card,344.19,16,16.13,86.11,0.2,"St. Louis, MO",Linda Jackson,Social Media,3
+TXN-000175,2025-08-03,South,Home & Garden,Regular,Debit Card,2034.19,25,65.09,406.94,0.25,"Orlando, FL",Jennifer Davis,Email,5
+TXN-000537,2025-08-06,Central,Sports & Outdoors,New,Mobile Payment,3578.92,24,91.04,1393.96,0.05,"Kansas City, MO",Patricia Lopez,TV,5
+TXN-000040,2025-08-07,Central,Beauty,New,Debit Card,729.24,16,30.39,243.0,0.25,"Oklahoma City, OK",Michael Wilson,Referral,4
+TXN-000187,2025-08-07,Central,Office Supplies,Premium,Mobile Payment,103.4,4,14.22,46.52,0,"Omaha, NE",David Garcia,Email,1
+TXN-000506,2025-08-07,Central,Apparel,Premium,Gift Card,1152.43,20,32.54,501.63,0.15,"Omaha, NE",Karen Martinez,Online Ads,5
+TXN-000259,2025-08-08,North,Electronics,Premium,Gift Card,572.94,3,137.51,160.41,0,"Chicago, IL",Linda Clark,Online Ads,1
+TXN-000404,2025-08-08,South,Beverages,Wholesale,Debit Card,367.68,24,9.19,147.12,0,"Orlando, FL",David Anderson,Online Ads,3
+TXN-000084,2025-08-09,South,Toys,Premium,Debit Card,1010.02,22,25.25,454.52,0,"Atlanta, GA",Ana Young,TV,4
+TXN-000106,2025-08-10,North,Beauty,Regular,Mobile Payment,754.69,19,23.36,310.85,0.15,"Detroit, MI",Elizabeth Garcia,Flyer,4
+TXN-000289,2025-08-10,West,Electronics,New,Debit Card,3906.28,14,200.89,1093.82,0,"Denver, CO",Patricia Lopez,Email,4
+TXN-000306,2025-08-11,South,Office Supplies,New,Cash,122.47,7,12.03,38.26,0.2,"Houston, TX",David Clark,Email,2
+TXN-000578,2025-08-12,South,Sports & Outdoors,Premium,Mobile Payment,1598.6,13,83.91,507.77,0.15,"Atlanta, GA",Linda Smith,Email,4
+TXN-000444,2025-08-13,North,Office Supplies,New,Mobile Payment,176.17,16,6.37,74.25,0.05,"Minneapolis, MN",David Clark,Flyer,5
+TXN-000015,2025-08-15,Central,Electronics,Regular,Debit Card,7544.16,18,301.77,2112.3,0,"Kansas City, MO",Daniel Clark,Online Ads,5
+TXN-000122,2025-08-15,East,Sports & Outdoors,New,Mobile Payment,527.17,17,17.99,221.34,0,"Philadelphia, PA",James Garcia,In-Store,1
+TXN-000438,2025-08-15,East,Beverages,Regular,Gift Card,118.7,10,7.12,47.5,0,"Philadelphia, PA",Michael Wilson,Flyer,3
+TXN-000557,2025-08-15,East,Electronics,Wholesale,Credit Card,2016.43,19,84.9,403.33,0.1,"New York, NY",Patricia Lee,Online Ads,3
+TXN-000096,2025-08-16,West,Food,New,Credit Card,89.39,22,3.11,20.97,0.15,"Seattle, WA",Elizabeth Young,Social Media,3
+TXN-000054,2025-08-19,South,Sports & Outdoors,Regular,Mobile Payment,2087.79,13,109.59,663.12,0.15,"Orlando, FL",Patricia Jackson,Social Media,3
+TXN-000124,2025-08-19,Central,Food,Regular,Mobile Payment,321.98,17,12.31,112.71,0,"St. Louis, MO",Carlos Brown,Flyer,4
+TXN-000157,2025-08-19,West,Beauty,Premium,Mobile Payment,1771.25,25,35.42,885.75,0,"Phoenix, AZ",Jennifer Davis,Flyer,1
+TXN-000164,2025-08-19,South,Office Supplies,Premium,Debit Card,61.15,13,3.23,19.16,0.2,"Atlanta, GA",Michael Wilson,Social Media,5
+TXN-000222,2025-08-19,West,Food,Premium,Gift Card,181.9,13,11.37,34.09,0.2,"Seattle, WA",Linda Clark,Online Ads,2
+TXN-000433,2025-08-19,West,Beauty,New,Credit Card,328.08,5,34.53,155.43,0.05,"Seattle, WA",Daniel Jackson,Email,4
+TXN-000590,2025-08-20,West,Groceries,Wholesale,Gift Card,714.19,22,24.53,174.53,0.1,"Los Angeles, CA",Elizabeth Garcia,Flyer,2
+TXN-000500,2025-08-21,West,Office Supplies,New,Gift Card,35.41,1,20.5,14.91,0.05,"Denver, CO",Laura Anderson,TV,3
+TXN-000213,2025-08-22,East,Sports & Outdoors,Wholesale,Credit Card,2951.25,20,114.11,669.05,0.25,"New York, NY",Ana Lewis,TV,5
+TXN-000536,2025-08-22,Central,Sports & Outdoors,Wholesale,Mobile Payment,900.86,17,38.42,247.72,0.2,"Oklahoma City, OK",Elizabeth Garcia,Email,3
+TXN-000139,2025-08-23,North,Groceries,Premium,Cash,29.11,1,20.84,8.27,0.05,"Chicago, IL",James Clark,In-Store,5
+TXN-000580,2025-08-23,West,Food,Premium,Gift Card,81.6,10,5.3,28.6,0,"Seattle, WA",John Taylor,Flyer,3
+TXN-000211,2025-08-24,South,Beauty,Premium,Gift Card,209.25,18,7.75,69.75,0.25,"Dallas, TX",Laura Anderson,In-Store,5
+TXN-000561,2025-08-24,East,Beauty,New,Mobile Payment,575.39,13,23.3,272.49,0.05,"Boston, MA",Patricia Lee,In-Store,4
+TXN-000039,2025-08-26,North,Office Supplies,Wholesale,Gift Card,370.0,15,15.96,130.6,0.15,"Minneapolis, MN",Michael Wilson,Referral,5
+TXN-000121,2025-08-26,Central,Sports & Outdoors,New,Debit Card,3370.25,20,114.98,1070.65,0.15,"Oklahoma City, OK",James Garcia,In-Store,5
+TXN-000043,2025-08-27,West,Home & Garden,Wholesale,Mobile Payment,2728.57,13,125.93,1091.48,0,"Los Angeles, CA",Ana Lewis,Social Media,4
+TXN-000208,2025-08-27,North,Food,Wholesale,Credit Card,281.52,12,17.94,66.24,0.15,"Milwaukee, WI",Karen Martinez,Flyer,3
+TXN-000070,2025-08-29,Central,Apparel,Wholesale,Credit Card,455.39,19,14.38,182.17,0.2,"Oklahoma City, OK",Jennifer Brown,Social Media,4
+TXN-000093,2025-08-30,North,Sports & Outdoors,New,Mobile Payment,175.7,3,45.29,39.83,0.25,"Detroit, MI",Carlos Brown,Email,1
+TXN-000267,2025-08-30,North,Sports & Outdoors,Regular,Credit Card,292.84,9,19.86,114.1,0.05,"Chicago, IL",Maria Anderson,Online Ads,5
+TXN-000390,2025-08-30,South,Beverages,Premium,Mobile Payment,236.03,25,6.29,78.78,0.1,"Dallas, TX",Jennifer Davis,TV,2
+TXN-000400,2025-08-30,West,Home & Garden,Premium,Gift Card,4185.8,20,125.57,1674.4,0,"Seattle, WA",Linda Clark,TV,4
+TXN-000036,2025-08-31,South,Apparel,Regular,Debit Card,1190.6,21,32.02,518.18,0.15,"Houston, TX",Linda Clark,Social Media,3
+TXN-000427,2025-08-31,North,Beverages,Wholesale,Cash,374.49,21,12.59,110.1,0.15,"Minneapolis, MN",David Anderson,TV,5
+TXN-000593,2025-08-31,East,Groceries,Premium,Credit Card,33.67,1,25.44,8.23,0.1,"Baltimore, MD",Ana Lewis,Flyer,3
+TXN-000374,2025-09-01,Central,Office Supplies,Premium,Credit Card,586.1,15,22.62,246.8,0.05,"Kansas City, MO",Linda Clark,Social Media,4
+TXN-000525,2025-09-01,North,Groceries,New,Gift Card,130.36,6,16.42,31.84,0.1,"Detroit, MI",Karen Martinez,Email,5
+TXN-000559,2025-09-02,West,Office Supplies,Wholesale,Credit Card,27.03,1,18.58,8.45,0.2,"Denver, CO",Karen Martinez,TV,4
+TXN-000102,2025-09-03,West,Office Supplies,Regular,Cash,464.25,15,17.02,208.95,0,"Denver, CO",Kevin Young,Email,2
+TXN-000230,2025-09-03,East,Beverages,Premium,Cash,291.08,10,23.29,58.18,0.25,"Boston, MA",Elizabeth Young,Social Media,4
+TXN-000292,2025-09-03,Central,Food,Wholesale,Cash,398.1,17,17.91,93.63,0.15,"Oklahoma City, OK",Daniel Clark,In-Store,4
+TXN-000308,2025-09-03,South,Electronics,Regular,Mobile Payment,3546.02,21,135.09,709.13,0.1,"Houston, TX",Patricia Jackson,In-Store,4
+TXN-000365,2025-09-03,Central,Toys,Regular,Credit Card,480.34,14,18.87,216.16,0,"Oklahoma City, OK",Elizabeth Young,Email,1
+TXN-000016,2025-09-04,South,Electronics,New,Mobile Payment,132.49,1,119.24,13.25,0.2,"Orlando, FL",David Clark,Online Ads,5
+TXN-000113,2025-09-06,Central,Beverages,New,Mobile Payment,309.5,25,7.43,123.75,0,"Oklahoma City, OK",Carlos Brown,Social Media,5
+TXN-000386,2025-09-06,West,Sports & Outdoors,New,Cash,4667.62,23,117.71,1960.29,0,"Phoenix, AZ",James Clark,Email,1
+TXN-000055,2025-09-07,South,Apparel,Regular,Gift Card,853.92,20,22.77,398.52,0.1,"Dallas, TX",Daniel Jackson,In-Store,3
+TXN-000114,2025-09-07,Central,Electronics,Regular,Debit Card,3893.4,20,140.16,1090.2,0,"Omaha, NE",David Clark,Email,3
+TXN-000385,2025-09-07,East,Beauty,New,Gift Card,442.8,8,27.68,221.36,0,"Philadelphia, PA",Ana Young,Email,4
+TXN-000468,2025-09-07,Central,Sports & Outdoors,Regular,Credit Card,316.86,2,114.86,87.14,0.2,"Kansas City, MO",Patricia Lopez,Flyer,4
+TXN-000473,2025-09-07,West,Toys,Premium,Credit Card,1474.48,24,35.57,620.8,0.05,"Seattle, WA",David Anderson,Flyer,4
+TXN-000562,2025-09-07,North,Home & Garden,Premium,Mobile Payment,305.13,7,26.15,122.08,0,"Milwaukee, WI",Elizabeth Young,In-Store,5
+TXN-000193,2025-09-08,North,Electronics,Wholesale,Gift Card,4294.61,17,227.36,429.49,0.2,"Milwaukee, WI",Ana Wilson,TV,5
+TXN-000491,2025-09-08,East,Home & Garden,Wholesale,Cash,2815.25,25,67.57,1126.0,0,"Baltimore, MD",Elizabeth Young,TV,5
+TXN-000565,2025-09-08,North,Sports & Outdoors,Regular,Debit Card,645.15,23,16.27,270.94,0,"Milwaukee, WI",Laura Anderson,In-Store,4
+TXN-000296,2025-09-09,North,Electronics,Wholesale,Credit Card,1607.68,8,144.69,450.16,0,"Chicago, IL",David Garcia,TV,3
+TXN-000227,2025-09-10,South,Beauty,Wholesale,Credit Card,473.76,14,18.8,210.56,0.1,"Houston, TX",Elizabeth Garcia,Social Media,3
+TXN-000184,2025-09-11,South,Electronics,New,Cash,1611.58,19,61.07,451.25,0,"Dallas, TX",James Garcia,Referral,5
+TXN-000345,2025-09-12,South,Food,Regular,Gift Card,8.57,1,5.57,3.0,0,"Orlando, FL",Linda Clark,Online Ads,3
+TXN-000599,2025-09-13,South,Food,New,Mobile Payment,129.95,24,4.14,30.59,0.15,"Orlando, FL",Patricia Lee,Social Media,5
+TXN-000116,2025-09-14,Central,Office Supplies,Wholesale,Credit Card,615.12,24,14.1,276.72,0,"Omaha, NE",James Garcia,In-Store,4
+TXN-000221,2025-09-14,East,Office Supplies,Wholesale,Cash,71.17,3,15.35,25.12,0.15,"New York, NY",Ana Lewis,Referral,4
+TXN-000396,2025-09-14,South,Beauty,Premium,Debit Card,340.43,17,11.12,151.39,0.1,"Orlando, FL",Daniel Clark,Email,4
+TXN-000018,2025-09-15,Central,Electronics,Regular,Gift Card,1738.83,3,417.32,486.87,0,"St. Louis, MO",Ana Young,Referral,3
+TXN-000166,2025-09-16,West,Home & Garden,New,Mobile Payment,300.0,2,90.0,120.0,0,"Seattle, WA",Kevin Young,Flyer,5
+TXN-000322,2025-09-16,West,Electronics,Premium,Mobile Payment,2469.72,16,148.18,98.84,0.25,"Los Angeles, CA",Karen Martinez,TV,4
+TXN-000583,2025-09-16,North,Toys,Wholesale,Mobile Payment,1018.44,23,24.35,458.39,0,"Milwaukee, WI",Daniel Lewis,In-Store,5
+TXN-000265,2025-09-18,South,Apparel,Wholesale,Credit Card,486.48,8,38.92,175.12,0.25,"Orlando, FL",Daniel Lewis,Online Ads,5
+TXN-000244,2025-09-19,West,Sports & Outdoors,Premium,Mobile Payment,564.62,13,31.49,155.25,0.2,"Denver, CO",Laura Anderson,TV,3
+TXN-000101,2025-09-20,Central,Groceries,New,Mobile Payment,523.6,20,17.8,167.6,0,"Kansas City, MO",Laura Anderson,In-Store,1
+TXN-000416,2025-09-20,East,Groceries,Premium,Cash,689.27,19,32.89,64.36,0.25,"Philadelphia, PA",Linda White,Online Ads,5
+TXN-000395,2025-09-22,East,Home & Garden,Wholesale,Mobile Payment,1366.09,12,80.36,401.77,0.15,"Baltimore, MD",Patricia Lee,TV,1
+TXN-000152,2025-09-23,West,Apparel,Premium,Gift Card,1643.06,23,45.72,591.5,0.25,"Los Angeles, CA",David Clark,Referral,5
+TXN-000041,2025-09-24,West,Apparel,Premium,Cash,1208.67,23,28.03,563.98,0.1,"Seattle, WA",David Garcia,Social Media,5
+TXN-000518,2025-09-24,East,Sports & Outdoors,New,Debit Card,4611.84,21,134.08,1796.16,0.05,"New York, NY",Daniel Jackson,Social Media,4
+TXN-000594,2025-09-24,East,Sports & Outdoors,Wholesale,Gift Card,2011.7,21,65.37,638.93,0.15,"Baltimore, MD",Linda Clark,Referral,5
+TXN-000402,2025-09-25,Central,Beauty,Regular,Gift Card,226.84,6,25.2,75.64,0.25,"Oklahoma City, OK",Jennifer Davis,Flyer,2
+TXN-000185,2025-09-26,West,Toys,New,Debit Card,357.42,7,28.08,160.86,0,"Seattle, WA",Linda Smith,Online Ads,4
+TXN-000333,2025-09-29,East,Electronics,Premium,Cash,2664.2,5,383.64,746.0,0,"Baltimore, MD",James Clark,TV,5
+TXN-000548,2025-09-29,West,Apparel,New,Gift Card,1343.88,15,53.76,537.48,0.2,"Los Angeles, CA",Linda Clark,In-Store,2
+TXN-000519,2025-09-30,East,Office Supplies,Regular,Credit Card,100.12,6,10.2,38.92,0.1,"Baltimore, MD",Kevin Young,TV,5
+TXN-000549,2025-09-30,East,Sports & Outdoors,New,Cash,2116.3,9,160.45,672.25,0.15,"Baltimore, MD",Maria Anderson,In-Store,4
+TXN-000316,2025-10-02,East,Apparel,Regular,Debit Card,625.56,16,25.02,225.24,0.25,"Baltimore, MD",David Anderson,Online Ads,3
+TXN-000418,2025-10-02,North,Home & Garden,Regular,Gift Card,872.4,13,47.37,256.59,0.15,"Detroit, MI",Patricia Lopez,Email,5
+TXN-000195,2025-10-05,North,Groceries,Premium,Mobile Payment,49.28,14,2.39,15.82,0,"Chicago, IL",Elizabeth Garcia,Online Ads,5
+TXN-000219,2025-10-06,Central,Beauty,Premium,Gift Card,821.26,11,37.33,410.63,0,"Kansas City, MO",Carlos Taylor,Flyer,4
+TXN-000446,2025-10-06,West,Home & Garden,Regular,Credit Card,1619.78,9,134.98,404.96,0.2,"Seattle, WA",Linda White,Referral,3
+TXN-000528,2025-10-06,South,Office Supplies,Regular,Gift Card,778.66,23,24.83,207.57,0.25,"Atlanta, GA",Kevin Young,Online Ads,4
+TXN-000026,2025-10-07,North,Sports & Outdoors,Regular,Cash,2414.58,14,100.03,1014.16,0,"Detroit, MI",Elizabeth Garcia,Flyer,1
+TXN-000534,2025-10-07,South,Groceries,New,Mobile Payment,124.99,18,5.9,18.79,0.2,"Atlanta, GA",Carlos Taylor,Social Media,3
+TXN-000256,2025-10-08,Central,Sports & Outdoors,Regular,Credit Card,2837.34,11,149.61,1191.63,0,"St. Louis, MO",Laura Anderson,Flyer,5
+TXN-000342,2025-10-08,East,Beauty,New,Mobile Payment,449.02,22,10.21,224.4,0,"Baltimore, MD",Linda Clark,In-Store,5
+TXN-000478,2025-10-08,West,Electronics,New,Debit Card,6068.48,22,198.6,1699.28,0,"Seattle, WA",Ana Wilson,Social Media,3
+TXN-000595,2025-10-08,West,Apparel,New,Debit Card,724.0,10,34.75,376.5,0,"Denver, CO",Jennifer Brown,Social Media,4
+TXN-000154,2025-10-09,Central,Apparel,New,Gift Card,2383.95,23,49.75,1239.7,0,"Omaha, NE",Daniel Lewis,In-Store,3
+TXN-000248,2025-10-09,Central,Sports & Outdoors,Regular,Mobile Payment,1010.44,25,27.58,320.94,0.15,"Kansas City, MO",John Taylor,Email,4
+TXN-000134,2025-10-11,North,Apparel,Wholesale,Gift Card,103.84,6,9.23,48.46,0.1,"Chicago, IL",Carlos Taylor,Flyer,4
+TXN-000141,2025-10-11,North,Groceries,New,Credit Card,45.19,13,2.78,9.05,0.15,"Milwaukee, WI",Elizabeth Garcia,Flyer,2
+TXN-000361,2025-10-11,West,Toys,Premium,Credit Card,479.16,6,43.92,215.64,0,"Denver, CO",Elizabeth Young,Referral,5
+TXN-000245,2025-10-12,South,Apparel,Regular,Cash,209.8,11,12.21,75.49,0.25,"Orlando, FL",Ana Lewis,Online Ads,3
+TXN-000512,2025-10-12,Central,Home & Garden,Regular,Debit Card,1389.22,11,89.15,408.57,0.15,"Kansas City, MO",David Anderson,Flyer,1
+TXN-000529,2025-10-12,North,Beauty,Regular,Gift Card,365.3,13,14.05,182.65,0,"Milwaukee, WI",Linda White,Flyer,4
+TXN-000225,2025-10-13,Central,Office Supplies,New,Mobile Payment,54.0,12,2.48,24.24,0,"Oklahoma City, OK",Ana Lewis,Social Media,4
+TXN-000356,2025-10-13,Central,Office Supplies,Premium,Mobile Payment,866.34,20,26.47,336.94,0.1,"Kansas City, MO",David Garcia,Social Media,1
+TXN-000493,2025-10-13,West,Home & Garden,New,Mobile Payment,934.6,13,47.93,311.51,0.1,"Los Angeles, CA",Daniel Clark,Online Ads,4
+TXN-000178,2025-10-14,East,Office Supplies,Wholesale,Cash,513.94,18,19.63,160.6,0.2,"Philadelphia, PA",Linda White,Flyer,3
+TXN-000331,2025-10-14,South,Office Supplies,Wholesale,Cash,112.82,8,8.62,43.86,0.1,"Dallas, TX",Elizabeth Garcia,Social Media,5
+TXN-000327,2025-10-15,Central,Apparel,New,Cash,1364.64,16,40.94,709.6,0,"Omaha, NE",Laura Anderson,Social Media,4
+TXN-000598,2025-10-15,North,Food,New,Credit Card,92.1,15,3.99,32.25,0,"Detroit, MI",Patricia Lopez,In-Store,4
+TXN-000392,2025-10-17,South,Food,Premium,Credit Card,58.69,25,2.03,7.94,0.25,"Orlando, FL",David Anderson,Social Media,3
+TXN-000168,2025-10-19,Central,Food,Wholesale,Gift Card,41.98,3,11.37,7.87,0.2,"St. Louis, MO",David Anderson,Flyer,5
+TXN-000161,2025-10-20,West,Groceries,New,Mobile Payment,723.65,18,30.38,176.81,0.1,"Los Angeles, CA",Daniel Lewis,Flyer,4
+TXN-000426,2025-10-20,South,Office Supplies,Wholesale,Debit Card,282.18,8,24.25,88.18,0.2,"Atlanta, GA",Carlos Taylor,Flyer,3
+TXN-000458,2025-10-20,West,Toys,Regular,Cash,1118.51,19,35.98,434.89,0.1,"Denver, CO",Daniel Lewis,TV,2
+TXN-000312,2025-10-21,South,Apparel,Premium,Credit Card,429.87,23,8.97,223.56,0,"Orlando, FL",Linda White,Online Ads,3
+TXN-000355,2025-10-21,West,Groceries,Regular,Credit Card,70.38,4,15.95,6.58,0.25,"Los Angeles, CA",Elizabeth Young,Online Ads,1
+TXN-000503,2025-10-21,Central,Groceries,Regular,Cash,455.64,12,25.82,145.8,0,"St. Louis, MO",David Garcia,Social Media,4
+TXN-000117,2025-10-22,West,Beverages,New,Debit Card,169.0,13,7.8,67.6,0,"Denver, CO",Maria Anderson,TV,5
+TXN-000471,2025-10-22,Central,Home & Garden,Premium,Cash,1477.58,13,68.2,590.98,0,"Kansas City, MO",Ana Young,Online Ads,5
+TXN-000078,2025-10-24,West,Groceries,Wholesale,Mobile Payment,284.07,12,18.94,56.79,0.15,"Seattle, WA",Patricia Lopez,Social Media,3
+TXN-000540,2025-10-24,East,Food,Wholesale,Gift Card,12.73,1,11.04,1.69,0.25,"New York, NY",Patricia Lee,Online Ads,5
+TXN-000424,2025-10-25,North,Food,New,Debit Card,172.44,9,12.45,60.39,0,"Detroit, MI",David Anderson,Online Ads,5
+TXN-000532,2025-10-26,North,Beauty,Regular,Credit Card,117.2,2,34.47,48.26,0.15,"Milwaukee, WI",Linda Jackson,TV,4
+TXN-000417,2025-10-28,North,Office Supplies,Premium,Cash,218.59,13,9.74,91.97,0.05,"Milwaukee, WI",James Clark,Social Media,5
+TXN-000011,2025-10-29,Central,Sports & Outdoors,Premium,Credit Card,233.28,3,45.1,97.98,0,"St. Louis, MO",Patricia Lee,In-Store,4
+TXN-000064,2025-10-29,West,Sports & Outdoors,Premium,Debit Card,3839.8,20,111.35,1612.8,0,"Phoenix, AZ",David Anderson,Referral,2
+TXN-000100,2025-10-29,East,Beauty,Regular,Credit Card,99.6,5,12.45,37.35,0.2,"New York, NY",Jennifer Brown,Online Ads,4
+TXN-000437,2025-10-30,Central,Sports & Outdoors,New,Mobile Payment,2626.53,21,80.6,933.93,0.1,"Oklahoma City, OK",John Taylor,Email,2
+TXN-000172,2025-10-31,East,Sports & Outdoors,New,Credit Card,85.37,1,58.26,27.11,0.15,"Baltimore, MD",James Clark,TV,4
+TXN-000199,2025-11-01,North,Sports & Outdoors,Regular,Mobile Payment,392.41,2,119.79,152.83,0.05,"Milwaukee, WI",James Garcia,Email,5
+TXN-000234,2025-11-01,North,Home & Garden,Regular,Gift Card,2013.84,12,100.69,805.56,0,"Chicago, IL",Laura Anderson,Referral,4
+TXN-000492,2025-11-01,Central,Toys,Premium,Gift Card,270.9,15,9.93,121.95,0,"Kansas City, MO",John Taylor,Online Ads,1
+TXN-000112,2025-11-02,North,Beauty,Regular,Cash,336.2,20,8.4,168.2,0,"Chicago, IL",James Garcia,Referral,4
+TXN-000293,2025-11-02,South,Apparel,Premium,Debit Card,223.72,16,7.9,97.32,0.15,"Houston, TX",Carlos Brown,Email,3
+TXN-000440,2025-11-02,South,Toys,Wholesale,Debit Card,474.66,14,23.31,148.32,0.2,"Houston, TX",Daniel Clark,Referral,4
+TXN-000572,2025-11-02,South,Sports & Outdoors,New,Mobile Payment,5402.19,21,165.78,1920.81,0.1,"Orlando, FL",Ana Lewis,TV,3
+TXN-000454,2025-11-03,Central,Office Supplies,New,Gift Card,449.15,15,18.3,174.65,0.1,"St. Louis, MO",Elizabeth Garcia,Online Ads,1
+TXN-000553,2025-11-03,North,Office Supplies,Premium,Credit Card,207.28,5,28.5,64.78,0.2,"Chicago, IL",Linda Jackson,Email,4
+TXN-000325,2025-11-04,North,Apparel,Wholesale,Mobile Payment,692.28,10,36.92,323.08,0.1,"Minneapolis, MN",Patricia Jackson,Social Media,5
+TXN-000205,2025-11-05,North,Home & Garden,Wholesale,Debit Card,3666.32,19,121.87,1350.79,0.05,"Chicago, IL",Patricia Jackson,Social Media,4
+TXN-000397,2025-11-05,North,Beverages,Wholesale,Mobile Payment,787.68,24,19.69,315.12,0,"Minneapolis, MN",Jennifer Brown,Email,5
+TXN-000171,2025-11-07,Central,Food,Wholesale,Gift Card,308.88,11,18.25,108.13,0,"St. Louis, MO",Linda Smith,Flyer,4
+TXN-000362,2025-11-07,East,Beverages,New,Mobile Payment,856.96,23,23.53,315.77,0.05,"Baltimore, MD",David Garcia,Social Media,5
+TXN-000138,2025-11-08,Central,Office Supplies,Regular,Credit Card,340.13,8,25.98,132.29,0.1,"Oklahoma City, OK",Daniel Lewis,Online Ads,5
+TXN-000262,2025-11-09,South,Food,Wholesale,Gift Card,466.83,21,14.45,163.38,0,"Orlando, FL",Linda Clark,Online Ads,3
+TXN-000351,2025-11-10,North,Groceries,Wholesale,Credit Card,147.78,4,31.4,22.18,0.2,"Minneapolis, MN",Ana Young,Social Media,4
+TXN-000407,2025-11-10,East,Home & Garden,Premium,Cash,1473.8,18,65.5,294.8,0.25,"Baltimore, MD",John Taylor,TV,5
+TXN-000494,2025-11-10,North,Groceries,Regular,Debit Card,627.45,15,28.44,200.85,0,"Minneapolis, MN",Linda White,TV,5
+TXN-000497,2025-11-10,South,Toys,New,Gift Card,1075.5,25,23.66,484.0,0,"Orlando, FL",Patricia Jackson,Referral,3
+TXN-000109,2025-11-11,Central,Sports & Outdoors,Regular,Debit Card,5791.65,23,162.28,2059.21,0.1,"Kansas City, MO",David Anderson,Referral,4
+TXN-000421,2025-11-11,North,Groceries,New,Mobile Payment,163.52,11,13.48,15.24,0.25,"Chicago, IL",Daniel Clark,Flyer,5
+TXN-000223,2025-11-13,East,Office Supplies,Premium,Mobile Payment,30.72,5,4.22,9.62,0.2,"Boston, MA",David Garcia,Social Media,2
+TXN-000317,2025-11-13,Central,Electronics,Regular,Mobile Payment,2986.71,11,205.78,723.13,0.05,"Oklahoma City, OK",Patricia Lopez,Social Media,4
+TXN-000588,2025-11-13,North,Food,Premium,Debit Card,124.38,18,4.49,43.56,0,"Detroit, MI",David Garcia,Email,5
+TXN-000085,2025-11-14,South,Sports & Outdoors,Wholesale,Cash,753.17,15,32.36,267.77,0.1,"Orlando, FL",Linda Clark,In-Store,5
+TXN-000369,2025-11-14,West,Food,Premium,Cash,395.69,18,15.04,124.97,0.05,"Seattle, WA",James Garcia,Email,2
+TXN-000527,2025-11-14,South,Groceries,Wholesale,Mobile Payment,213.39,11,13.89,60.6,0.05,"Atlanta, GA",Karen Martinez,Flyer,4
+TXN-000033,2025-11-16,East,Apparel,New,Mobile Payment,1157.73,22,31.57,463.19,0.2,"New York, NY",Linda Jackson,Social Media,5
+TXN-000228,2025-11-17,West,Groceries,Wholesale,Cash,71.3,10,4.85,22.8,0,"Seattle, WA",Michael Wilson,TV,4
+TXN-000451,2025-11-17,North,Food,Premium,Mobile Payment,461.15,23,13.03,161.46,0,"Chicago, IL",Daniel Lewis,Social Media,5
+TXN-000508,2025-11-17,North,Sports & Outdoors,New,Cash,4195.94,14,173.83,1762.32,0,"Minneapolis, MN",John Taylor,Flyer,3
+TXN-000586,2025-11-18,North,Food,New,Gift Card,134.96,10,10.97,25.26,0.2,"Milwaukee, WI",John Taylor,TV,3
+TXN-000174,2025-11-19,Central,Beauty,Regular,Debit Card,532.96,8,33.31,266.48,0,"Oklahoma City, OK",Ana Lewis,Online Ads,4
+TXN-000379,2025-11-19,West,Food,Regular,Gift Card,54.34,22,1.61,18.92,0,"Denver, CO",Ana Young,Flyer,5
+TXN-000431,2025-11-20,South,Food,Regular,Credit Card,220.96,20,8.98,41.36,0.2,"Atlanta, GA",Daniel Clark,Social Media,3
+TXN-000507,2025-11-20,West,Beauty,Premium,Credit Card,513.14,8,35.63,228.1,0.1,"Denver, CO",Carlos Brown,In-Store,5
+TXN-000394,2025-11-21,East,Sports & Outdoors,Wholesale,Cash,816.67,6,98.68,224.59,0.2,"Philadelphia, PA",Karen Martinez,Referral,2
+TXN-000181,2025-11-23,South,Office Supplies,Regular,Debit Card,458.16,23,14.61,122.13,0.25,"Houston, TX",Ana Lewis,TV,3
+TXN-000281,2025-11-23,West,Sports & Outdoors,Premium,Cash,2475.62,14,102.56,1039.78,0,"Los Angeles, CA",David Anderson,Flyer,4
+TXN-000455,2025-11-23,Central,Beauty,Premium,Cash,1210.74,20,35.61,498.54,0.15,"Oklahoma City, OK",Linda Smith,In-Store,5
+TXN-000546,2025-11-23,South,Sports & Outdoors,New,Credit Card,2691.48,12,130.09,1130.4,0,"Atlanta, GA",Ana Wilson,Email,5
+TXN-000001,2025-11-24,Central,Food,Premium,Credit Card,640.0,25,16.64,224.0,0,"St. Louis, MO",Maria Anderson,Social Media,4
+TXN-000007,2025-11-24,Central,Beauty,New,Mobile Payment,198.24,6,16.52,99.12,0,"St. Louis, MO",Ana Lewis,In-Store,4
+TXN-000202,2025-11-26,West,Beverages,Premium,Gift Card,140.08,10,10.51,34.98,0.2,"Phoenix, AZ",Jennifer Brown,Email,3
+TXN-000563,2025-11-26,East,Toys,Regular,Cash,1451.7,15,53.23,653.25,0,"Baltimore, MD",Ana Wilson,Social Media,1
+TXN-000218,2025-11-27,East,Toys,Wholesale,Cash,703.46,8,50.91,296.18,0.05,"New York, NY",Ana Wilson,In-Store,4
+TXN-000288,2025-11-27,West,Office Supplies,Regular,Mobile Payment,600.49,11,30.02,270.27,0,"Seattle, WA",Ana Wilson,Email,5
+TXN-000452,2025-11-27,East,Home & Garden,Premium,Cash,167.08,13,9.07,49.17,0.15,"Baltimore, MD",Patricia Lee,In-Store,5
+TXN-000067,2025-11-28,South,Beauty,New,Mobile Payment,55.94,6,5.18,24.86,0.1,"Dallas, TX",Carlos Brown,Online Ads,4
+TXN-000204,2025-11-28,North,Food,Regular,Cash,104.65,24,2.98,33.13,0.05,"Milwaukee, WI",Elizabeth Young,Referral,5
+TXN-000324,2025-11-28,South,Apparel,Regular,Mobile Payment,1388.39,17,39.2,721.99,0,"Atlanta, GA",Patricia Lopez,Email,3
+TXN-000053,2025-11-30,East,Groceries,New,Debit Card,494.86,24,15.58,120.94,0.1,"Baltimore, MD",Michael Wilson,In-Store,4
+TXN-000183,2025-11-30,Central,Toys,Wholesale,Debit Card,151.92,2,41.78,68.36,0,"St. Louis, MO",Patricia Lopez,In-Store,4
+TXN-000558,2025-12-01,North,Beverages,Wholesale,Gift Card,236.95,23,7.27,69.74,0.15,"Chicago, IL",Ana Lewis,TV,5
+TXN-000329,2025-12-02,West,Apparel,Regular,Gift Card,1141.5,13,52.68,456.66,0.2,"Phoenix, AZ",Linda Jackson,TV,3
+TXN-000475,2025-12-02,North,Beauty,Premium,Mobile Payment,1186.05,20,39.53,395.45,0.25,"Detroit, MI",Ana Wilson,Flyer,3
+TXN-000550,2025-12-02,Central,Groceries,Premium,Gift Card,891.71,24,26.59,253.55,0.05,"Oklahoma City, OK",David Garcia,Referral,3
+TXN-000160,2025-12-04,Central,Sports & Outdoors,Regular,Gift Card,26.74,1,15.51,11.23,0,"Omaha, NE",David Anderson,Referral,3
+TXN-000457,2025-12-04,North,Beauty,Regular,Mobile Payment,34.96,2,9.2,16.56,0.05,"Chicago, IL",Daniel Jackson,In-Store,1
+TXN-000017,2025-12-05,West,Home & Garden,New,Credit Card,162.42,2,48.73,64.96,0,"Seattle, WA",Ana Wilson,TV,5
+TXN-000191,2025-12-07,South,Sports & Outdoors,New,Credit Card,593.64,3,153.03,134.55,0.25,"Atlanta, GA",Patricia Lopez,TV,2
+TXN-000600,2025-12-08,South,Food,Regular,Debit Card,383.4,24,13.85,51.0,0.25,"Orlando, FL",Linda Clark,TV,2
+TXN-000366,2025-12-10,North,Apparel,New,Debit Card,499.61,6,44.41,233.15,0.1,"Minneapolis, MN",Michael Wilson,In-Store,4
+TXN-000194,2025-12-11,East,Beverages,Regular,Credit Card,11.09,1,7.0,4.09,0.05,"New York, NY",James Clark,Social Media,2
+TXN-000276,2025-12-11,North,Home & Garden,Regular,Mobile Payment,324.86,2,121.82,81.22,0.2,"Minneapolis, MN",Patricia Jackson,Social Media,4
+TXN-000252,2025-12-14,North,Beverages,Premium,Debit Card,332.19,9,22.15,132.84,0,"Minneapolis, MN",Carlos Taylor,Referral,4
+TXN-000169,2025-12-15,Central,Beauty,New,Gift Card,863.34,13,39.06,355.56,0.15,"Kansas City, MO",Elizabeth Garcia,Flyer,3
+TXN-000051,2025-12-17,Central,Sports & Outdoors,New,Credit Card,2285.28,12,138.07,628.44,0.2,"Kansas City, MO",Jennifer Davis,Referral,4
+TXN-000143,2025-12-17,West,Beauty,Regular,Cash,148.19,3,32.93,49.4,0.25,"Denver, CO",Daniel Jackson,In-Store,3
+TXN-000377,2025-12-17,West,Home & Garden,Regular,Debit Card,2558.7,23,83.44,639.58,0.2,"Los Angeles, CA",Ana Lewis,Online Ads,4
+TXN-000587,2025-12-17,North,Electronics,Regular,Credit Card,6501.24,22,250.32,994.2,0.15,"Detroit, MI",Elizabeth Young,Social Media,5
+TXN-000173,2025-12-19,North,Apparel,Regular,Gift Card,2764.03,25,55.86,1367.53,0.05,"Milwaukee, WI",Jennifer Brown,Email,5
+TXN-000406,2025-12-19,East,Food,New,Gift Card,62.75,14,3.24,17.39,0.1,"Baltimore, MD",James Clark,TV,4
+TXN-000118,2025-12-20,East,Beverages,Wholesale,Gift Card,218.18,8,20.45,54.58,0.2,"New York, NY",Ana Young,Online Ads,4
+TXN-000236,2025-12-20,Central,Food,New,Mobile Payment,479.04,16,19.46,167.68,0,"St. Louis, MO",Patricia Lopez,In-Store,2
+TXN-000450,2025-12-20,West,Food,Wholesale,Credit Card,188.64,8,15.33,66.0,0,"Seattle, WA",Linda Clark,TV,4
+TXN-000057,2025-12-21,South,Sports & Outdoors,Wholesale,Gift Card,1838.6,18,69.7,584.0,0.15,"Dallas, TX",David Garcia,Social Media,5
+TXN-000232,2025-12-21,North,Groceries,New,Debit Card,82.46,10,5.9,23.46,0.05,"Milwaukee, WI",Linda Jackson,Online Ads,4
+TXN-000368,2025-12-21,North,Beverages,Regular,Credit Card,333.42,22,10.7,98.02,0.15,"Milwaukee, WI",Linda Smith,Social Media,3
+TXN-000496,2025-12-21,South,Office Supplies,Regular,Gift Card,121.25,15,5.23,42.8,0.15,"Houston, TX",Linda Jackson,Online Ads,5
+TXN-000571,2025-12-22,West,Home & Garden,Wholesale,Debit Card,299.3,9,26.6,59.9,0.25,"Seattle, WA",Daniel Clark,TV,1
+TXN-000137,2025-12-23,South,Groceries,New,Debit Card,94.62,3,21.45,30.27,0,"Orlando, FL",Michael Wilson,Email,5
+TXN-000479,2025-12-23,Central,Electronics,Wholesale,Cash,321.78,1,231.68,90.1,0,"Omaha, NE",Linda Clark,Flyer,4
+TXN-000505,2025-12-23,South,Office Supplies,Wholesale,Gift Card,746.97,21,19.56,336.21,0,"Houston, TX",Patricia Lopez,Flyer,4
+TXN-000592,2025-12-23,South,Beauty,New,Mobile Payment,1200.54,17,35.31,600.27,0,"Orlando, FL",Linda Clark,TV,3
+TXN-000079,2025-12-24,South,Home & Garden,New,Mobile Payment,3016.16,14,129.26,1206.52,0,"Orlando, FL",Linda Jackson,Flyer,4
+TXN-000295,2025-12-24,East,Food,Premium,Mobile Payment,542.07,19,18.54,189.81,0,"New York, NY",John Taylor,Social Media,3
+TXN-000523,2025-12-24,West,Groceries,Wholesale,Debit Card,266.17,21,11.49,24.88,0.25,"Los Angeles, CA",Daniel Lewis,Email,5
+TXN-000049,2025-12-25,East,Beauty,Premium,Cash,1210.56,24,25.22,605.28,0,"Philadelphia, PA",Carlos Brown,TV,1
+TXN-000068,2025-12-25,West,Toys,Regular,Mobile Payment,865.2,15,31.72,389.4,0,"Phoenix, AZ",Linda Smith,Social Media,5
+TXN-000315,2025-12-25,Central,Office Supplies,Regular,Gift Card,133.1,5,14.64,59.9,0,"Oklahoma City, OK",Linda White,In-Store,4
+TXN-000104,2025-12-26,North,Beverages,New,Mobile Payment,122.62,8,11.5,30.62,0.2,"Minneapolis, MN",Elizabeth Young,Online Ads,2
+TXN-000271,2025-12-26,North,Groceries,Premium,Cash,730.42,17,32.46,178.6,0.1,"Minneapolis, MN",Carlos Taylor,Referral,4
+TXN-000300,2025-12-26,Central,Sports & Outdoors,Premium,Gift Card,411.91,20,14.05,130.91,0.15,"Oklahoma City, OK",Carlos Brown,Online Ads,3
+TXN-000585,2025-12-27,West,Groceries,Premium,Cash,97.04,5,16.5,14.54,0.2,"Los Angeles, CA",Laura Anderson,Online Ads,1
+TXN-000453,2025-12-28,West,Toys,New,Cash,504.91,7,39.67,227.22,0,"Phoenix, AZ",Linda Smith,Online Ads,4
+TXN-000299,2025-12-29,Central,Home & Garden,New,Cash,814.7,6,101.84,203.66,0.2,"Omaha, NE",Carlos Taylor,Email,1
+TXN-000460,2025-12-29,North,Toys,Regular,Debit Card,31.7,3,6.46,12.32,0.1,"Detroit, MI",Jennifer Davis,In-Store,2

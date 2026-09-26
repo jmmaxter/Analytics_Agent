@@ -1,0 +1,8 @@
+Transaction_ID,Date,Region,Product_Category,Revenue,Units_Sold,Discount_Applied
+TXN-1001,2025-01-01,North,Electronics,1250.00,2,0.05
+TXN-1002,2025-01-02,South,Apparel,450.00,5,0.00
+TXN-1003,2025-01-02,North,Electronics,,1,0.10
+TXN-1004,2025-01-03,East,Home_Garden,890.50,3,0.15
+TXN-1005,2025-01-04,West,Apparel,120.00,2,0.00
+TXN-1006,2025-01-05,South,Electronics,2100.00,4,0.20
+TXN-1007,2025-01-05,North,Home_Garden,400.00,1,0.00
