@@ -1,0 +1,35 @@
+services:
+  # ---------------------------------------------------------------------------
+  # 1. FastAPI Analytics Engine (Backend)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: analytics-agent-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: GEMINI_API_KEY
+        sync: false # Requires manual entry in Render Dashboard upon setup
+
+  # ---------------------------------------------------------------------------
+  # 2. Streamlit Interface (Frontend)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: analytics-agent-frontend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "streamlit run app_ui.py --server.port $PORT --server.address 0.0.0.0"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: BACKEND_URL
+        fromService:
+          type: web
+          name: analytics-agent-backend
+          property: host
