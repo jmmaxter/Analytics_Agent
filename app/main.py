@@ -1,12 +1,22 @@
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 from app.agents.workflow import app_graph
 from app.api.routes import router
 
 app = FastAPI(title="Analytics Agent", version="0.1.0")
+
+# Enable Cross-Origin Resource Sharing
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permits requests from any host (e.g. Render frontend)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(router)
 

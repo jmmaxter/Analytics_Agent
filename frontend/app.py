@@ -1,10 +1,60 @@
+import os
 import streamlit as st
 import requests
 import pandas as pd
 from typing import Optional, Dict, Any
 
+def get_backend_url() -> str:
+    """
+    Dynamically constructs the API base URL.
+    Falls back to localhost if BACKEND_URL is not set in environment.
+    """
+    raw_url = os.getenv("BACKEND_URL")
+    
+    # Local development fallback
+    if not raw_url:
+        return "http://localhost:8000"
+    
+    # Render's 'host' property omits protocol; add https:// if missing
+    if not raw_url.startswith(("http://", "https://")):
+        return f"https://{raw_url.strip('/')}"
+        
+    return raw_url.strip('/')
+
 # Backend Configuration
-API_BASE_URL = "http://127.0.0.1:8000/api/v1"
+# API_BASE_URL = "http://127.0.0.1:8000/api/v1"
+API_BASE_URL = get_backend_url()
+
+def send_query_to_backend(prompt: str, session_id: str = "default_session"):
+    """
+    Executes a POST request to the FastAPI analytics backend.
+    """
+    target_endpoint = f"{API_BASE_URL}/query"
+    payload = {
+        "prompt": prompt,
+        "session_id": session_id
+    }
+    
+    try:
+        response = requests.post(
+            target_endpoint,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=60  # Essential for LLM/DuckDB queries that take time
+        )
+        response.raise_for_status()
+        return response.json()
+
+    except requests.exceptions.ConnectionError:
+        st.error(f"Connection failed: Unable to reach backend at `{API_BASE_URL}`. Verify service status.")
+    except requests.exceptions.Timeout:
+        st.error("Request timed out waiting for backend analytical response.")
+    except requests.exceptions.HTTPError as err:
+        st.error(f"Backend HTTP error {response.status_code}: {response.text}")
+    except Exception as err:
+        st.error(f"Unexpected error executing request: {str(err)}")
+        
+    return None
 
 st.set_page_config(
     page_title="Conversational Data Analytics Workspace",
