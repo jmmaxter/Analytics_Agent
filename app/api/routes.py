@@ -10,6 +10,13 @@ from app.agents.analyzer import analytics_agent, synthesizer_agent, AnalyticalPl
 
 router = APIRouter(prefix="/api/v1", tags=["Analytics Workspace"])
 
+
+@router.get("/health", status_code=200)
+async def health_check():
+    """Health check endpoint for Render service uptime monitoring."""
+    return {"status": "healthy", "timestamp": time.time()}
+
+
 def resolve_columns(requested_cols: list[str] | str, available_cols: list[str]) -> list[str]:
     """Resolves requested column names against schema, preventing accidental ID column grouping."""
     if isinstance(requested_cols, str):
@@ -20,7 +27,7 @@ def resolve_columns(requested_cols: list[str] | str, available_cols: list[str]) 
         req_clean = req.lower().strip()
         # 1. Direct or case-insensitive match
         match = next((c for c in available_cols if c.lower() == req_clean), None)
-        # 2. Substring match (e.g., 'region' -> 'Sales_Region')
+        # 2. Substring match
         if not match:
             match = next((c for c in available_cols if req_clean in c.lower()), None)
             
@@ -31,11 +38,13 @@ def resolve_columns(requested_cols: list[str] | str, available_cols: list[str]) 
     filtered = [c for c in resolved if not (c.lower().endswith("_id") or c.lower() == "id")]
     return filtered if filtered else (resolved if resolved else [available_cols[0]])
 
+
 @router.post("/dataset/upload", response_model=DatasetSummary, status_code=201)
 async def upload_dataset(file: UploadFile = File(...)):
     """Uploads a CSV or Excel file, initializes an isolated DuckDB workspace, and returns schema metadata."""
     allowed_extensions = [".csv", ".xlsx", ".xls"]
-    file_ext = os.path.splitext(file.filename)[1].lower()
+    filename = file.filename or ""
+    file_ext = os.path.splitext(filename)[1].lower()
     
     if file_ext not in allowed_extensions:
         raise HTTPException(
@@ -43,18 +52,23 @@ async def upload_dataset(file: UploadFile = File(...)):
             detail=f"Invalid file type '{file_ext}'. Allowed types: {', '.join(allowed_extensions)}"
         )
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as tmp_file:
-        content = await file.read()
-        tmp_file.write(content)
-        tmp_file_path = tmp_file.name
-
+    tmp_file_path = None
     try:
-        summary = session_manager.create_session(tmp_file_path, file.filename)
+        # Write temporary file and explicitly close handle before session creation
+        # to prevent file lock contention in Linux/Render environments
+        with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as tmp_file:
+            content = await file.read()
+            tmp_file.write(content)
+            tmp_file_path = tmp_file.name
+
+        summary = session_manager.create_session(tmp_file_path, filename)
         return summary
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process dataset: {str(e)}")
     finally:
-        if os.path.exists(tmp_file_path):
+        if tmp_file_path and os.path.exists(tmp_file_path):
             os.remove(tmp_file_path)
 
 
@@ -122,29 +136,24 @@ async def execute_query(payload: QueryRequest):
             raw_metric = tool_args.get("metric_column")
             agg_func = tool_args.get("aggregation", "SUM").upper()
 
-            # Non-ID schema columns for fallback
             non_id_cols = [c for c in schema_summary['columns'] if not (c.lower().endswith("_id") or c.lower() == "id")]
             if not non_id_cols:
                 non_id_cols = schema_summary['columns']
 
-            # Resolve dimension columns and filter out Primary Keys
             dimensions = resolve_columns(raw_dims, schema_summary['columns'])
             dimensions = [d for d in dimensions if not (d.lower().endswith("_id") or d.lower() == "id")]
             
-            # If no valid dimension was found, scan prompt for schema column matches
             if not dimensions:
                 prompt_lower = payload.query.lower()
                 matched = [c for c in non_id_cols if c.lower() in prompt_lower]
                 dimensions = matched if matched else [non_id_cols[0]]
 
-            # Resolve metric column
             metric_col = None
             if raw_metric:
                 resolved_m = resolve_columns([raw_metric], schema_summary['columns'])
                 if resolved_m:
                     metric_col = resolved_m[0]
             
-            # Infer metric column if missing from tool_args
             if not metric_col:
                 metric_col = next(
                     (c for c in schema_summary['columns'] if any(m in c.lower() for m in ["revenue", "sales", "amount", "total", "price"])),
@@ -196,7 +205,6 @@ async def execute_query(payload: QueryRequest):
             metric_col = tool_args.get("metric_column")
             time_frame = str(tool_args.get("time_frame", "MoM")).upper()
 
-            # Fallback column detection if not identified by agent
             if not date_col:
                 date_cols = [c for c, t in schema_summary["schema_types"].items() if "DATE" in t.upper() or "TIME" in t.upper()]
                 date_col = date_cols[0] if date_cols else schema_summary['columns'][0]
@@ -226,7 +234,7 @@ async def execute_query(payload: QueryRequest):
             """
             raw_res = conn.execute(sql_query).df()
 
-        # --- TOOL 6: Sales Rep / Channel Performance & Market Share ---
+        # --- TOOL 6: Cross-Entity Performance ---
         elif tool_name == "cross_entity_performance":
             entity_col = tool_args.get("entity_column", schema_summary['columns'][0])
             metric_col = tool_args.get("metric_column", schema_summary['columns'][-1])
@@ -245,7 +253,7 @@ async def execute_query(payload: QueryRequest):
             """
             raw_res = conn.execute(sql_query).df()
 
-        # --- General Dynamic Fallback (No Limit) ---
+        # --- General Dynamic Fallback ---
         else:
             raw_res = conn.execute("SELECT * FROM active_dataset").df()
             

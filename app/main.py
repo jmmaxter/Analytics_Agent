@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 from app.agents.workflow import app_graph
-from app.api.routes import router
+# from app.api.routes import router
+from app.api.routes import router as api_router
 
 app = FastAPI(title="Analytics Agent", version="0.1.0")
 
@@ -18,11 +19,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
+app.include_router(api_router)
 
 class AnalyzeRequest(BaseModel):
     query: str
     dataset_path: str
+
+@app.post("/query")
+async def execute_query(payload: dict):
+    # Your LangGraph / DuckDB / Gemini agent logic here
+    return {"status": "success", "received_prompt": payload.get("prompt")}
 
 @app.get("/")
 def read_root():
