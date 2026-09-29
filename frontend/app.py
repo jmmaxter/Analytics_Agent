@@ -4,63 +4,98 @@ import requests
 import pandas as pd
 from typing import Optional, Dict, Any
 
-def get_backend_url() -> str:
-    """
-    Dynamically constructs the API base URL.
-    Falls back to localhost if BACKEND_URL is not set in environment.
-    """
-    raw_url = os.getenv("BACKEND_URL")
-    
-    # Local development fallback
-    if not raw_url:
-        return "http://localhost:8000"
-    
-    # Render's 'host' property omits protocol; add https:// if missing
-    if not raw_url.startswith(("http://", "https://")):
-        return f"https://{raw_url.strip('/')}"
-        
-    return raw_url.strip('/')
-
-# Backend Configuration
-# API_BASE_URL = "http://127.0.0.1:8000/api/v1"
-API_BASE_URL = get_backend_url()
-
-def send_query_to_backend(prompt: str, session_id: str = "default_session"):
-    """
-    Executes a POST request to the FastAPI analytics backend.
-    """
-    target_endpoint = f"{API_BASE_URL}/query"
-    payload = {
-        "prompt": prompt,
-        "session_id": session_id
-    }
-    
-    try:
-        response = requests.post(
-            target_endpoint,
-            json=payload,
-            headers={"Content-Type": "application/json"},
-            timeout=60  # Essential for LLM/DuckDB queries that take time
-        )
-        response.raise_for_status()
-        return response.json()
-
-    except requests.exceptions.ConnectionError:
-        st.error(f"Connection failed: Unable to reach backend at `{API_BASE_URL}`. Verify service status.")
-    except requests.exceptions.Timeout:
-        st.error("Request timed out waiting for backend analytical response.")
-    except requests.exceptions.HTTPError as err:
-        st.error(f"Backend HTTP error {response.status_code}: {response.text}")
-    except Exception as err:
-        st.error(f"Unexpected error executing request: {str(err)}")
-        
-    return None
-
+# -----------------------------------------------------------------------------
+# Streamlit Page Configuration (Must be set prior to other UI elements)
+# -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Conversational Data Analytics Workspace",
     page_icon="📊",
     layout="wide"
 )
+
+# -----------------------------------------------------------------------------
+# Backend URL Configuration
+# -----------------------------------------------------------------------------
+def get_backend_url() -> str:
+    """
+    Dynamically constructs the API base URL with the required /api/v1 prefix.
+    Falls back to 127.0.0.1:8000 if BACKEND_URL is not set in environment.
+    """
+    raw_url = os.getenv("BACKEND_URL", "http://127.0.0.1:8000").strip().rstrip("/")
+    
+    # Render's 'host' property omits protocol; add https:// if missing
+    if not raw_url.startswith(("http://", "https://")):
+        raw_url = f"https://{raw_url}"
+        
+    # Ensure /api/v1 endpoint prefix is attached
+    if not raw_url.endswith("/api/v1"):
+        raw_url = f"{raw_url}/api/v1"
+        
+    return raw_url
+
+API_BASE_URL = get_backend_url()
+
+# -----------------------------------------------------------------------------
+# Helper Functions for API Communication
+# -----------------------------------------------------------------------------
+def upload_file_to_backend(uploaded_file) -> Optional[dict]:
+    """Sends uploaded file to FastAPI backend and retrieves session metadata."""
+    try:
+        files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
+        response = requests.post(
+            f"{API_BASE_URL}/dataset/upload", 
+            files=files,
+            timeout=60  # Allows time for Render cold starts
+        )
+        if response.status_code == 201:
+            return response.json()
+        else:
+            try:
+                error_detail = response.json().get("detail", response.text)
+            except Exception:
+                error_detail = response.text or f"HTTP {response.status_code}"
+            st.error(f"Upload failed ({response.status_code}): {error_detail}")
+            return None
+    except requests.exceptions.ConnectionError:
+        st.error(f"Could not connect to backend server at `{API_BASE_URL}`. Verify service status and host URL.")
+        return None
+    except requests.exceptions.Timeout:
+        st.error("Upload request timed out. The backend container may be spinning up from a cold start. Please try again in 20 seconds.")
+        return None
+
+def submit_query_to_backend(session_id: str, query: str) -> Optional[dict]:
+    """Sends natural language query to FastAPI endpoint for execution."""
+    try:
+        payload = {"session_id": session_id, "query": query}
+        response = requests.post(
+            f"{API_BASE_URL}/query", 
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=60
+        )
+        if response.status_code == 200:
+            return response.json()
+        else:
+            try:
+                error_detail = response.json().get("detail", response.text)
+            except Exception:
+                error_detail = response.text or f"HTTP {response.status_code}"
+            st.error(f"Query error ({response.status_code}): {error_detail}")
+            return None
+    except requests.exceptions.ConnectionError:
+        st.error(f"Connection error while reaching backend at `{API_BASE_URL}`.")
+        return None
+    except requests.exceptions.Timeout:
+        st.error("Request timed out waiting for analytical response.")
+        return None
+
+def clear_backend_session(session_id: str) -> bool:
+    """Notifies backend to purge temporary DuckDB database for this session."""
+    try:
+        response = requests.delete(f"{API_BASE_URL}/dataset/{session_id}", timeout=10)
+        return response.status_code == 200
+    except Exception:
+        return False
 
 # -----------------------------------------------------------------------------
 # Dynamic Suggested Questions Generator
@@ -102,7 +137,7 @@ def generate_suggested_questions(summary: Optional[Dict[str, Any]]) -> Dict[str,
         "🔠 Breakdown & Grouping": {
             "tool": "group_by_analysis",
             "queries": [
-                "What is the total revenue by region and marketing channel?",
+                f"What is the total {num_col} grouped by {cat_col}?",
                 f"What is the record count grouped by {cat_col}?"
             ]
         },
@@ -138,53 +173,6 @@ if "dataset_summary" not in st.session_state:
     st.session_state.dataset_summary = None
 if "query_history" not in st.session_state:
     st.session_state.query_history = []
-
-# -----------------------------------------------------------------------------
-# Helper Functions for API Communication
-# -----------------------------------------------------------------------------
-def upload_file_to_backend(uploaded_file) -> Optional[dict]:
-    """Sends uploaded file to FastAPI backend and retrieves session metadata."""
-    try:
-        files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
-        response = requests.post(f"{API_BASE_URL}/dataset/upload", files=files)
-        if response.status_code == 201:
-            return response.json()
-        else:
-            try:
-                error_detail = response.json().get("detail", response.text)
-            except Exception:
-                error_detail = response.text or f"HTTP {response.status_code}"
-            st.error(f"Upload failed ({response.status_code}): {error_detail}")
-            return None
-    except requests.exceptions.ConnectionError:
-        st.error("Could not connect to backend server. Ensure FastAPI is running on port 8000.")
-        return None
-
-def submit_query_to_backend(session_id: str, query: str) -> Optional[dict]:
-    """Sends natural language query to FastAPI endpoint for execution."""
-    try:
-        payload = {"session_id": session_id, "query": query}
-        response = requests.post(f"{API_BASE_URL}/query", json=payload)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            try:
-                error_detail = response.json().get("detail", response.text)
-            except Exception:
-                error_detail = response.text or f"HTTP {response.status_code}"
-            st.error(f"Query error ({response.status_code}): {error_detail}")
-            return None
-    except requests.exceptions.ConnectionError:
-        st.error("Connection error while reaching backend.")
-        return None
-
-def clear_backend_session(session_id: str) -> bool:
-    """Notifies backend to purge temporary DuckDB database for this session."""
-    try:
-        response = requests.delete(f"{API_BASE_URL}/dataset/{session_id}")
-        return response.status_code == 200
-    except Exception:
-        return False
 
 # -----------------------------------------------------------------------------
 # Sidebar: Dataset Management & Upload
