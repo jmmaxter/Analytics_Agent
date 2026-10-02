@@ -1,8 +1,9 @@
 import os
-import streamlit as st
+import time
 import requests
 import pandas as pd
-from typing import Optional, Dict, Any
+import streamlit as st
+from typing import Optional, Dict, Any, Tuple
 
 # -----------------------------------------------------------------------------
 # Streamlit Page Configuration (Must be set prior to other UI elements)
@@ -14,38 +15,97 @@ st.set_page_config(
 )
 
 # -----------------------------------------------------------------------------
-# Backend URL Configuration
+# Backend URL Configuration (Render & Local Support)
 # -----------------------------------------------------------------------------
-def get_backend_url() -> str:
+def get_backend_urls() -> Tuple[str, str]:
     """
-    Dynamically constructs the API base URL with the required /api/v1 prefix.
-    Falls back to 127.0.0.1:8000 if BACKEND_URL is not set in environment.
+    Dynamically constructs the Base Host URL and API v1 Endpoint URL.
+    Handles Render environment variables, protocol prepending, and trailing slashes.
+    
+    Returns:
+        Tuple[str, str]: (base_host_url, api_v1_base_url)
     """
     raw_url = os.getenv("BACKEND_URL", "http://127.0.0.1:8000").strip().rstrip("/")
     
-    # Render's 'host' property omits protocol; add https:// if missing
+    # If protocol is missing (e.g. Render 'host' property format)
     if not raw_url.startswith(("http://", "https://")):
-        raw_url = f"https://{raw_url}"
+        if "127.0.0.1" in raw_url or "localhost" in raw_url:
+            raw_url = f"http://{raw_url}"
+        else:
+            raw_url = f"https://{raw_url}"
+            
+    # Strip /api/v1 suffix if present to get clean base host
+    if raw_url.endswith("/api/v1"):
+        base_host = raw_url[:-7]
+    else:
+        base_host = raw_url
         
-    # Ensure /api/v1 endpoint prefix is attached
-    if not raw_url.endswith("/api/v1"):
-        raw_url = f"{raw_url}/api/v1"
-        
-    return raw_url
+    api_base_url = f"{base_host}/api/v1"
+    return base_host, api_base_url
 
-API_BASE_URL = get_backend_url()
+BASE_HOST_URL, API_BASE_URL = get_backend_urls()
+
+# -----------------------------------------------------------------------------
+# Session State Initialization
+# -----------------------------------------------------------------------------
+if "session_id" not in st.session_state:
+    st.session_state.session_id = None
+if "dataset_summary" not in st.session_state:
+    st.session_state.dataset_summary = None
+if "query_history" not in st.session_state:
+    st.session_state.query_history = []
+if "backend_online" not in st.session_state:
+    st.session_state.backend_online = False
+
+# -----------------------------------------------------------------------------
+# Backend Health & Cold-Start Wake-Up Logic
+# -----------------------------------------------------------------------------
+def ensure_backend_healthy(max_wait_seconds: int = 60, poll_interval: int = 3) -> bool:
+    """
+    Pings backend endpoints to wake up sleeping services (Render Cold Start)
+    or verify local connectivity before processing requests.
+    """
+    endpoints_to_try = [
+        f"{BASE_HOST_URL}/health",
+        f"{API_BASE_URL}/health",
+        f"{BASE_HOST_URL}/"
+    ]
+    
+    start_time = time.time()
+    
+    with st.spinner("⏳ Connecting to backend... (Waking up server if idle on Render)"):
+        while (time.time() - start_time) < max_wait_seconds:
+            for url in endpoints_to_try:
+                try:
+                    res = requests.get(url, timeout=5)
+                    # 200 OK or 404 indicates the container is active and responding
+                    if res.status_code in [200, 404]:
+                        st.session_state.backend_online = True
+                        return True
+                except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+                    pass
+            
+            time.sleep(poll_interval)
+            
+    st.session_state.backend_online = False
+    return False
 
 # -----------------------------------------------------------------------------
 # Helper Functions for API Communication
 # -----------------------------------------------------------------------------
 def upload_file_to_backend(uploaded_file) -> Optional[dict]:
     """Sends uploaded file to FastAPI backend and retrieves session metadata."""
+    if not st.session_state.get("backend_online", False):
+        if not ensure_backend_healthy():
+            st.error(f"❌ Backend service at `{BASE_HOST_URL}` is unreachable. Ensure backend service is running.")
+            return None
+
     try:
         files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
         response = requests.post(
             f"{API_BASE_URL}/dataset/upload", 
             files=files,
-            timeout=60  # Allows time for Render cold starts
+            timeout=90  # Generous timeout for upload + DuckDB ingestion
         )
         if response.status_code == 201:
             return response.json()
@@ -56,22 +116,27 @@ def upload_file_to_backend(uploaded_file) -> Optional[dict]:
                 error_detail = response.text or f"HTTP {response.status_code}"
             st.error(f"Upload failed ({response.status_code}): {error_detail}")
             return None
-    except requests.exceptions.ConnectionError:
-        st.error(f"Could not connect to backend server at `{API_BASE_URL}`. Verify service status and host URL.")
-        return None
-    except requests.exceptions.Timeout:
-        st.error("Upload request timed out. The backend container may be spinning up from a cold start. Please try again in 20 seconds.")
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        st.warning("⚠️ Connection interrupted. Attempting to wake up backend and retry upload...")
+        if ensure_backend_healthy():
+            return upload_file_to_backend(uploaded_file)
+        st.error(f"Could not establish connection to backend at `{API_BASE_URL}`.")
         return None
 
 def submit_query_to_backend(session_id: str, query: str) -> Optional[dict]:
     """Sends natural language query to FastAPI endpoint for execution."""
+    if not st.session_state.get("backend_online", False):
+        if not ensure_backend_healthy():
+            st.error(f"❌ Backend service at `{BASE_HOST_URL}` is unreachable.")
+            return None
+
     try:
         payload = {"session_id": session_id, "query": query}
         response = requests.post(
             f"{API_BASE_URL}/query", 
             json=payload,
             headers={"Content-Type": "application/json"},
-            timeout=60
+            timeout=90
         )
         if response.status_code == 200:
             return response.json()
@@ -82,17 +147,17 @@ def submit_query_to_backend(session_id: str, query: str) -> Optional[dict]:
                 error_detail = response.text or f"HTTP {response.status_code}"
             st.error(f"Query error ({response.status_code}): {error_detail}")
             return None
-    except requests.exceptions.ConnectionError:
-        st.error(f"Connection error while reaching backend at `{API_BASE_URL}`.")
-        return None
-    except requests.exceptions.Timeout:
-        st.error("Request timed out waiting for analytical response.")
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        st.warning("⚠️ Query timed out or lost connection. Waking backend and retrying...")
+        if ensure_backend_healthy():
+            return submit_query_to_backend(session_id, query)
+        st.error("Request failed. Backend server may be offline or rebooting.")
         return None
 
 def clear_backend_session(session_id: str) -> bool:
     """Notifies backend to purge temporary DuckDB database for this session."""
     try:
-        response = requests.delete(f"{API_BASE_URL}/dataset/{session_id}", timeout=10)
+        response = requests.delete(f"{API_BASE_URL}/dataset/{session_id}", timeout=15)
         return response.status_code == 200
     except Exception:
         return False
@@ -165,21 +230,26 @@ def generate_suggested_questions(summary: Optional[Dict[str, Any]]) -> Dict[str,
     }
 
 # -----------------------------------------------------------------------------
-# Session State Initialization
-# -----------------------------------------------------------------------------
-if "session_id" not in st.session_state:
-    st.session_state.session_id = None
-if "dataset_summary" not in st.session_state:
-    st.session_state.dataset_summary = None
-if "query_history" not in st.session_state:
-    st.session_state.query_history = []
-
-# -----------------------------------------------------------------------------
-# Sidebar: Dataset Management & Upload
+# Sidebar: Dataset Management & Backend Status
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("📂 Dataset Workspace")
     
+    # Backend Status Card
+    st.markdown("### 🔌 Backend Connection")
+    if st.session_state.backend_online:
+        st.success(f"🟢 Active (`{BASE_HOST_URL}`)")
+    else:
+        st.warning(f"🔴 Offline / Sleeping (`{BASE_HOST_URL}`)")
+        if st.button("⚡ Ping / Wake Up Backend", use_container_width=True):
+            if ensure_backend_healthy():
+                st.success("Backend is ready!")
+                st.rerun()
+            else:
+                st.error("Could not reach backend server.")
+
+    st.divider()
+
     uploaded_file = st.file_uploader(
         "Upload dataset (CSV or Excel)",
         type=["csv", "xlsx", "xls"],
