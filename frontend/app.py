@@ -3,6 +3,7 @@ import time
 import requests
 import pandas as pd
 import streamlit as st
+import plotly.express as px
 from typing import Optional, Dict, Any, Tuple
 
 # -----------------------------------------------------------------------------
@@ -161,6 +162,130 @@ def clear_backend_session(session_id: str) -> bool:
         return response.status_code == 200
     except Exception:
         return False
+
+# -----------------------------------------------------------------------------
+# Dynamic Visualization Renderer Engine
+# -----------------------------------------------------------------------------
+def render_analytics_chart(raw_data: List[Dict[str, Any]], selected_tool: str, tool_args: Dict[str, Any]):
+    """
+    Dynamically builds and renders interactive Plotly visualizations matching
+    the analytical intent of the selected backend tool.
+    """
+    if not raw_data or len(raw_data) == 0:
+        return
+
+    df = pd.DataFrame(raw_data)
+    cols = list(df.columns)
+
+    if len(cols) == 0:
+        return
+
+    # 1. Single Value / Metric KPI
+    if selected_tool in ["get_row_count", "aggregate_metric"] or len(df) == 1:
+        if len(cols) == 1:
+            val = df.iloc[0, 0]
+            col_name = cols[0].replace("_", " ").title()
+            val_str = f"{val:,.2f}" if isinstance(val, (int, float)) else str(val)
+            st.metric(label=col_name, value=val_str)
+            return
+
+    # Infer Column Categories
+    num_cols = df.select_dtypes(include=["number"]).columns.tolist()
+    cat_cols = df.select_dtypes(include=["object", "string", "category"]).columns.tolist()
+    date_cols = [c for c in cols if any(k in c.lower() for k in ["date", "time", "year", "month", "day"])]
+
+    # 2. Top N Ranking -> Horizontal Bar Chart
+    if selected_tool == "top_n_ranking":
+        y_col = cat_cols[0] if cat_cols else cols[0]
+        x_col = num_cols[0] if num_cols else (cols[1] if len(cols) > 1 else cols[0])
+
+        fig = px.bar(
+            df,
+            x=x_col,
+            y=y_col,
+            orientation="h",
+            title=f"🏆 Top Ranking: {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}",
+            color=x_col,
+            color_continuous_scale="Viridis",
+            text_auto=True
+        )
+        fig.update_layout(yaxis={"categoryorder": "total ascending"}, margin=dict(l=10, r=10, t=40, b=10))
+        st.plotly_chart(fig, use_container_width=True)
+        return
+
+    # 3. Period-over-Period / Time Series -> Line Chart
+    if selected_tool == "period_over_period" or (date_cols and num_cols):
+        x_col = date_cols[0] if date_cols else (cat_cols[0] if cat_cols else cols[0])
+        y_col = num_cols[0] if num_cols else cols[-1]
+
+        fig = px.line(
+            df,
+            x=x_col,
+            y=y_col,
+            markers=True,
+            title=f"📈 Trend Analysis: {y_col.replace('_', ' ').title()} over {x_col.replace('_', ' ').title()}",
+            template="plotly_white"
+        )
+        fig.update_traces(line_shape="linear", line=dict(width=3))
+        fig.update_layout(hovermode="x unified", margin=dict(l=10, r=10, t=40, b=10))
+        st.plotly_chart(fig, use_container_width=True)
+        return
+
+    # 4. Group-By Analysis -> Vertical Bar or Donut Chart
+    if selected_tool == "group_by_analysis":
+        x_col = cat_cols[0] if cat_cols else cols[0]
+        y_col = num_cols[0] if num_cols else cols[-1]
+
+        if len(df) <= 5:
+            fig = px.pie(
+                df,
+                names=x_col,
+                values=y_col,
+                hole=0.4,
+                title=f"🍩 Distribution of {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}"
+            )
+            fig.update_traces(textposition="inside", textinfo="percent+label")
+        else:
+            fig = px.bar(
+                df,
+                x=x_col,
+                y=y_col,
+                color=x_col,
+                title=f"📊 Grouped Breakdown: {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}",
+                text_auto=True
+            )
+            fig.update_layout(xaxis_tickangle=-45)
+
+        fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+        st.plotly_chart(fig, use_container_width=True)
+        return
+
+    # 5. Cross-Entity Performance -> Grouped Multi-Variable Bar
+    if selected_tool == "cross_entity_performance" and len(cat_cols) >= 2:
+        fig = px.bar(
+            df,
+            x=cat_cols[0],
+            y=num_cols[0] if num_cols else cols[-1],
+            color=cat_cols[1],
+            barmode="group",
+            title="🤝 Cross-Entity Performance Breakdown",
+            text_auto=True
+        )
+        fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+        st.plotly_chart(fig, use_container_width=True)
+        return
+
+    # 6. Fallback Bar Chart
+    if cat_cols and num_cols:
+        fig = px.bar(
+            df, 
+            x=cat_cols[0], 
+            y=num_cols[0], 
+            title=f"📊 Visualizing {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}", 
+            text_auto=True
+        )
+        fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+        st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------------------------------------------------------
 # Dynamic Suggested Questions Generator

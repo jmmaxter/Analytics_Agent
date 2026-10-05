@@ -23,3 +23,4 @@ pydantic>=2.6.0
 python-multipart>=0.0.9
 requests>=2.31.0
 streamlit>=1.32.0
+plotly>=5.18.0
