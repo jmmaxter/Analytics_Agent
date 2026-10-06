@@ -4,7 +4,7 @@ import requests
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Any, Tuple, List
 
 # -----------------------------------------------------------------------------
 # Streamlit Page Configuration (Must be set prior to other UI elements)
