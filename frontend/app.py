@@ -168,36 +168,44 @@ def clear_backend_session(session_id: str) -> bool:
 # -----------------------------------------------------------------------------
 def render_analytics_chart(raw_data: List[Dict[str, Any]], selected_tool: str, tool_args: Dict[str, Any]):
     """
-    Dynamically builds and renders interactive Plotly visualizations matching
-    the analytical intent of the selected backend tool.
+    Dynamically builds and renders interactive Plotly visualizations aligned
+    with the exact ToolName taxonomy defined in analyzer.py.
     """
     if not raw_data or len(raw_data) == 0:
         return
 
     df = pd.DataFrame(raw_data)
-    cols = list(df.columns)
-
-    if len(cols) == 0:
+    if df.empty or len(df.columns) == 0:
         return
 
-    # 1. Single Value / Metric KPI
-    if selected_tool in ["get_row_count", "aggregate_metric"] or len(df) == 1:
-        if len(cols) == 1:
+    # Automatically infer numeric data types from stringified responses
+    for col in df.columns:
+        try:
+            df[col] = pd.to_numeric(df[col])
+        except (ValueError, TypeError):
+            pass
+
+    num_cols = df.select_dtypes(include=["number"]).columns.tolist()
+    cat_cols = [c for c in df.columns if c not in num_cols]
+    date_cols = [c for c in df.columns if any(k in c.lower() for k in ["date", "time", "year", "month", "day", "period"])]
+
+    # -------------------------------------------------------------------------
+    # 1. Single Value / Metric KPI (get_row_count, aggregate_metrics)
+    # -------------------------------------------------------------------------
+    if selected_tool in ["get_row_count", "aggregate_metrics"] or len(df) == 1:
+        if len(df) == 1 and len(df.columns) == 1:
             val = df.iloc[0, 0]
-            col_name = cols[0].replace("_", " ").title()
+            col_name = df.columns[0].replace("_", " ").title()
             val_str = f"{val:,.2f}" if isinstance(val, (int, float)) else str(val)
             st.metric(label=col_name, value=val_str)
             return
 
-    # Infer Column Categories
-    num_cols = df.select_dtypes(include=["number"]).columns.tolist()
-    cat_cols = df.select_dtypes(include=["object", "string", "category"]).columns.tolist()
-    date_cols = [c for c in cols if any(k in c.lower() for k in ["date", "time", "year", "month", "day"])]
-
-    # 2. Top N Ranking -> Horizontal Bar Chart
-    if selected_tool == "top_n_ranking":
-        y_col = cat_cols[0] if cat_cols else cols[0]
-        x_col = num_cols[0] if num_cols else (cols[1] if len(cols) > 1 else cols[0])
+    # -------------------------------------------------------------------------
+    # 2. Sort & Rank -> Horizontal Bar Chart
+    # -------------------------------------------------------------------------
+    if selected_tool == "sort_and_rank":
+        y_col = cat_cols[0] if cat_cols else df.columns[0]
+        x_col = num_cols[0] if num_cols else (df.columns[1] if len(df.columns) > 1 else df.columns[0])
 
         fig = px.bar(
             df,
@@ -213,75 +221,86 @@ def render_analytics_chart(raw_data: List[Dict[str, Any]], selected_tool: str, t
         st.plotly_chart(fig, use_container_width=True)
         return
 
-    # 3. Period-over-Period / Time Series -> Line Chart
-    if selected_tool == "period_over_period" or (date_cols and num_cols):
-        x_col = date_cols[0] if date_cols else (cat_cols[0] if cat_cols else cols[0])
-        y_col = num_cols[0] if num_cols else cols[-1]
-
-        fig = px.line(
-            df,
-            x=x_col,
-            y=y_col,
-            markers=True,
-            title=f"📈 Trend Analysis: {y_col.replace('_', ' ').title()} over {x_col.replace('_', ' ').title()}",
-            template="plotly_white"
-        )
-        fig.update_traces(line_shape="linear", line=dict(width=3))
-        fig.update_layout(hovermode="x unified", margin=dict(l=10, r=10, t=40, b=10))
-        st.plotly_chart(fig, use_container_width=True)
-        return
-
-    # 4. Group-By Analysis -> Vertical Bar or Donut Chart
-    if selected_tool == "group_by_analysis":
-        x_col = cat_cols[0] if cat_cols else cols[0]
-        y_col = num_cols[0] if num_cols else cols[-1]
-
-        if len(df) <= 5:
-            fig = px.pie(
+    # -------------------------------------------------------------------------
+    # 3. Group By Analysis (Single & Multi-Column Breakdown)
+    # -------------------------------------------------------------------------
+    if selected_tool in ["group_by_analysis", "filter_records"]:
+        # A. Time Series / Date Trend
+        if date_cols and num_cols:
+            x_col = date_cols[0]
+            y_col = num_cols[0]
+            fig = px.line(
                 df,
-                names=x_col,
-                values=y_col,
-                hole=0.4,
-                title=f"🍩 Distribution of {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}"
+                x=x_col,
+                y=y_col,
+                color=cat_cols[0] if (cat_cols and cat_cols[0] != date_cols[0]) else None,
+                markers=True,
+                title=f"📈 Trend Analysis: {y_col.replace('_', ' ').title()} over {x_col.replace('_', ' ').title()}",
+                template="plotly_white"
             )
-            fig.update_traces(textposition="inside", textinfo="percent+label")
-        else:
+            fig.update_layout(hovermode="x unified", margin=dict(l=10, r=10, t=40, b=10))
+            st.plotly_chart(fig, use_container_width=True)
+            return
+
+        # B. Multi-Category Grouping (e.g. Category AND Region) -> Grouped Bar Chart
+        if len(cat_cols) >= 2 and num_cols:
+            x_col = cat_cols[0]
+            color_col = cat_cols[1]
+            y_col = num_cols[0]
+
             fig = px.bar(
                 df,
                 x=x_col,
                 y=y_col,
-                color=x_col,
-                title=f"📊 Grouped Breakdown: {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}",
+                color=color_col,
+                barmode="group",
+                title=f"📊 Performance Breakdown: {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()} & {color_col.replace('_', ' ').title()}",
                 text_auto=True
             )
-            fig.update_layout(xaxis_tickangle=-45)
+            fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+            st.plotly_chart(fig, use_container_width=True)
+            return
 
-        fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
-        st.plotly_chart(fig, use_container_width=True)
-        return
+        # C. Single Category Grouping -> Donut or Vertical Bar
+        if cat_cols and num_cols:
+            x_col = cat_cols[0]
+            y_col = num_cols[0]
 
-    # 5. Cross-Entity Performance -> Grouped Multi-Variable Bar
-    if selected_tool == "cross_entity_performance" and len(cat_cols) >= 2:
-        fig = px.bar(
-            df,
-            x=cat_cols[0],
-            y=num_cols[0] if num_cols else cols[-1],
-            color=cat_cols[1],
-            barmode="group",
-            title="🤝 Cross-Entity Performance Breakdown",
-            text_auto=True
-        )
-        fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
-        st.plotly_chart(fig, use_container_width=True)
-        return
+            if len(df) <= 5:
+                fig = px.pie(
+                    df,
+                    names=x_col,
+                    values=y_col,
+                    hole=0.4,
+                    title=f"🍩 Distribution of {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}"
+                )
+                fig.update_traces(textposition="inside", textinfo="percent+label")
+            else:
+                fig = px.bar(
+                    df,
+                    x=x_col,
+                    y=y_col,
+                    color=x_col,
+                    title=f"📊 Breakdown: {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}",
+                    text_auto=True
+                )
+                fig.update_layout(xaxis_tickangle=-45)
 
-    # 6. Fallback Bar Chart
-    if cat_cols and num_cols:
+            fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+            st.plotly_chart(fig, use_container_width=True)
+            return
+
+    # -------------------------------------------------------------------------
+    # 4. Universal Fallback Chart
+    # -------------------------------------------------------------------------
+    if len(df.columns) >= 2:
+        x_c = cat_cols[0] if cat_cols else df.columns[0]
+        y_c = num_cols[0] if num_cols else df.columns[1]
         fig = px.bar(
             df, 
-            x=cat_cols[0], 
-            y=num_cols[0], 
-            title=f"📊 Visualizing {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}", 
+            x=x_c, 
+            y=y_c, 
+            title=f"📊 Visualizing {y_c.replace('_', ' ').title()} by {x_c.replace('_', ' ').title()}",
             text_auto=True
         )
         fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
