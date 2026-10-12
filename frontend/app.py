@@ -166,19 +166,31 @@ def clear_backend_session(session_id: str) -> bool:
 # -----------------------------------------------------------------------------
 # Dynamic Visualization Renderer Engine
 # -----------------------------------------------------------------------------
-def render_analytics_chart(raw_data: List[Dict[str, Any]], selected_tool: str, tool_args: Dict[str, Any]):
+def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[str, Any]):
     """
-    Dynamically builds and renders interactive Plotly visualizations aligned
-    with the exact ToolName taxonomy defined in analyzer.py.
+    Safely parses raw_data into a pandas DataFrame and renders an interactive Plotly chart.
     """
-    if not raw_data or len(raw_data) == 0:
+    # 1. Parse raw_data if stringified
+    if isinstance(raw_data, str):
+        try:
+            raw_data = json.loads(raw_data)
+        except Exception:
+            return
+
+    if not raw_data:
         return
 
-    df = pd.DataFrame(raw_data)
+    # Convert dict of lists or list of dicts to DataFrame
+    try:
+        df = pd.DataFrame(raw_data)
+    except Exception as e:
+        st.error(f"Error creating DataFrame for chart: {e}")
+        return
+
     if df.empty or len(df.columns) == 0:
         return
 
-    # Automatically infer numeric data types from stringified responses
+    # Automatically cast numeric columns stringified by DuckDB/FastAPI
     for col in df.columns:
         try:
             df[col] = pd.to_numeric(df[col])
@@ -189,121 +201,46 @@ def render_analytics_chart(raw_data: List[Dict[str, Any]], selected_tool: str, t
     cat_cols = [c for c in df.columns if c not in num_cols]
     date_cols = [c for c in df.columns if any(k in c.lower() for k in ["date", "time", "year", "month", "day", "period"])]
 
-    # -------------------------------------------------------------------------
-    # 1. Single Value / Metric KPI (get_row_count, aggregate_metrics)
-    # -------------------------------------------------------------------------
-    if selected_tool in ["get_row_count", "aggregate_metrics"] or len(df) == 1:
-        if len(df) == 1 and len(df.columns) == 1:
-            val = df.iloc[0, 0]
-            col_name = df.columns[0].replace("_", " ").title()
-            val_str = f"{val:,.2f}" if isinstance(val, (int, float)) else str(val)
-            st.metric(label=col_name, value=val_str)
-            return
-
-    # -------------------------------------------------------------------------
-    # 2. Sort & Rank -> Horizontal Bar Chart
-    # -------------------------------------------------------------------------
-    if selected_tool == "sort_and_rank":
-        y_col = cat_cols[0] if cat_cols else df.columns[0]
-        x_col = num_cols[0] if num_cols else (df.columns[1] if len(df.columns) > 1 else df.columns[0])
-
+    # Render Chart Based on Categorical & Numeric Dimensions
+    if len(cat_cols) >= 2 and num_cols:
+        # Multi-category breakdown (e.g. Category + Region)
         fig = px.bar(
             df,
-            x=x_col,
-            y=y_col,
-            orientation="h",
-            title=f"🏆 Top Ranking: {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}",
-            color=x_col,
-            color_continuous_scale="Viridis",
+            x=cat_cols[0],
+            y=num_cols[0],
+            color=cat_cols[1],
+            barmode="group",
+            title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()} & {cat_cols[1].replace('_', ' ').title()}",
             text_auto=True
         )
-        fig.update_layout(yaxis={"categoryorder": "total ascending"}, margin=dict(l=10, r=10, t=40, b=10))
         st.plotly_chart(fig, use_container_width=True)
-        return
 
-    # -------------------------------------------------------------------------
-    # 3. Group By Analysis (Single & Multi-Column Breakdown)
-    # -------------------------------------------------------------------------
-    if selected_tool in ["group_by_analysis", "filter_records"]:
-        # A. Time Series / Date Trend
-        if date_cols and num_cols:
-            x_col = date_cols[0]
-            y_col = num_cols[0]
-            fig = px.line(
-                df,
-                x=x_col,
-                y=y_col,
-                color=cat_cols[0] if (cat_cols and cat_cols[0] != date_cols[0]) else None,
-                markers=True,
-                title=f"📈 Trend Analysis: {y_col.replace('_', ' ').title()} over {x_col.replace('_', ' ').title()}",
-                template="plotly_white"
-            )
-            fig.update_layout(hovermode="x unified", margin=dict(l=10, r=10, t=40, b=10))
-            st.plotly_chart(fig, use_container_width=True)
-            return
-
-        # B. Multi-Category Grouping (e.g. Category AND Region) -> Grouped Bar Chart
-        if len(cat_cols) >= 2 and num_cols:
-            x_col = cat_cols[0]
-            color_col = cat_cols[1]
-            y_col = num_cols[0]
-
-            fig = px.bar(
-                df,
-                x=x_col,
-                y=y_col,
-                color=color_col,
-                barmode="group",
-                title=f"📊 Performance Breakdown: {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()} & {color_col.replace('_', ' ').title()}",
-                text_auto=True
-            )
-            fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
-            st.plotly_chart(fig, use_container_width=True)
-            return
-
-        # C. Single Category Grouping -> Donut or Vertical Bar
-        if cat_cols and num_cols:
-            x_col = cat_cols[0]
-            y_col = num_cols[0]
-
-            if len(df) <= 5:
-                fig = px.pie(
-                    df,
-                    names=x_col,
-                    values=y_col,
-                    hole=0.4,
-                    title=f"🍩 Distribution of {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}"
-                )
-                fig.update_traces(textposition="inside", textinfo="percent+label")
-            else:
-                fig = px.bar(
-                    df,
-                    x=x_col,
-                    y=y_col,
-                    color=x_col,
-                    title=f"📊 Breakdown: {y_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}",
-                    text_auto=True
-                )
-                fig.update_layout(xaxis_tickangle=-45)
-
-            fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
-            st.plotly_chart(fig, use_container_width=True)
-            return
-
-    # -------------------------------------------------------------------------
-    # 4. Universal Fallback Chart
-    # -------------------------------------------------------------------------
-    if len(df.columns) >= 2:
-        x_c = cat_cols[0] if cat_cols else df.columns[0]
-        y_c = num_cols[0] if num_cols else df.columns[1]
+    elif cat_cols and num_cols:
+        # Single category breakdown
         fig = px.bar(
-            df, 
-            x=x_c, 
-            y=y_c, 
-            title=f"📊 Visualizing {y_c.replace('_', ' ').title()} by {x_c.replace('_', ' ').title()}",
+            df,
+            x=cat_cols[0],
+            y=num_cols[0],
+            color=cat_cols[0],
+            title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}",
             text_auto=True
         )
-        fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+        st.plotly_chart(fig, use_container_width=True)
+
+    elif date_cols and num_cols:
+        # Time-series trend
+        fig = px.line(
+            df,
+            x=date_cols[0],
+            y=num_cols[0],
+            markers=True,
+            title=f"📈 Trend of {num_cols[0].replace('_', ' ').title()} over {date_cols[0].replace('_', ' ').title()}"
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    elif len(df.columns) >= 2:
+        # Generic 2-column fallback
+        fig = px.bar(df, x=df.columns[0], y=df.columns[1], text_auto=True)
         st.plotly_chart(fig, use_container_width=True)
 
 # -----------------------------------------------------------------------------
@@ -489,7 +426,9 @@ else:
             if result:
                 st.session_state.query_history.insert(0, result)
 
+    # -------------------------------------------------------------------------
     # Render Results History Feed
+    # -------------------------------------------------------------------------
     if st.session_state.query_history:
         st.markdown("### 📈 Analytical Output")
         
@@ -497,16 +436,40 @@ else:
             with st.container(border=True):
                 st.subheader(f"❓ {item['original_query']}")
                 
+                # 1. Executive Summary / Text Insight
                 st.markdown(item["insight"])
                 
-                if item["raw_data"]:
-                    st.markdown("**Raw Query Output:**")
-                    res_df = pd.DataFrame(item["raw_data"])
-                    st.dataframe(res_df, use_container_width=True, hide_index=True)
+                # =============================================================
+                # 🐛 DEBUG BLOCK — Place right here to inspect backend payload
+                # =============================================================
+                with st.expander("🐛 Debug Response Payload", expanded=True):
+                    st.write("**`selected_tool`:**", item.get("selected_tool"))
+                    st.write("**`raw_data` type:**", type(item.get("raw_data")))
+                    st.write("**`raw_data` content:**", item.get("raw_data"))
+                # =============================================================
                 
-                with st.expander("⚙️ View Technical Details"):
-                    t_col1, t_col2, t_col3 = st.columns(3)
-                    t_col1.write(f"**Tool Used:** `{item['selected_tool']}`")
-                    t_col2.write(f"**Execution Time:** `{item['execution_time_ms']} ms`")
-                    t_col3.write(f"**Status:** `{item['status']}`")
-                    st.json(item["tool_args"])
+                # 2. Dynamic Chart Visualization
+                raw_data = item.get("raw_data")
+                
+                # Handle stringified JSON if backend returns string instead of list
+                if isinstance(raw_data, str):
+                    import json
+                    try:
+                        raw_data = json.loads(raw_data)
+                    except Exception:
+                        raw_data = None
+
+                if raw_data:
+                    render_analytics_chart(
+                        raw_data=raw_data,
+                        selected_tool=item.get("selected_tool", ""),
+                        tool_args=item.get("tool_args", {})
+                    )
+                else:
+                    st.warning("⚠️ No tabular `raw_data` received in payload to render a chart.")
+                
+                # 3. Tabular Data View
+                if raw_data:
+                    with st.expander("📋 View Raw Data Table"):
+                        res_df = pd.DataFrame(raw_data)
+                        st.dataframe(res_df, use_container_width=True, hide_index=True)
