@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import requests
 import pandas as pd
 import streamlit as st
@@ -168,7 +169,8 @@ def clear_backend_session(session_id: str) -> bool:
 # -----------------------------------------------------------------------------
 def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[str, Any]):
     """
-    Safely parses raw_data into a pandas DataFrame and renders an interactive Plotly chart.
+    Safely parses raw_data into a pandas DataFrame, renders an interactive Plotly chart,
+    and provides built-in PNG and standalone HTML export capabilities.
     """
     # 1. Parse raw_data if stringified
     if isinstance(raw_data, str):
@@ -201,6 +203,8 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
     cat_cols = [c for c in df.columns if c not in num_cols]
     date_cols = [c for c in df.columns if any(k in c.lower() for k in ["date", "time", "year", "month", "day", "period"])]
 
+    fig = None
+
     # Render Chart Based on Categorical & Numeric Dimensions
     if len(cat_cols) >= 2 and num_cols:
         # Multi-category breakdown (e.g. Category + Region)
@@ -213,7 +217,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()} & {cat_cols[1].replace('_', ' ').title()}",
             text_auto=True
         )
-        st.plotly_chart(fig, use_container_width=True)
 
     elif cat_cols and num_cols:
         # Single category breakdown
@@ -225,7 +228,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}",
             text_auto=True
         )
-        st.plotly_chart(fig, use_container_width=True)
 
     elif date_cols and num_cols:
         # Time-series trend
@@ -236,12 +238,46 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             markers=True,
             title=f"📈 Trend of {num_cols[0].replace('_', ' ').title()} over {date_cols[0].replace('_', ' ').title()}"
         )
-        st.plotly_chart(fig, use_container_width=True)
 
     elif len(df.columns) >= 2:
         # Generic 2-column fallback
         fig = px.bar(df, x=df.columns[0], y=df.columns[1], text_auto=True)
-        st.plotly_chart(fig, use_container_width=True)
+
+    # If the figure was successfully created, configure toolbar and render with export options
+    if fig is not None:
+        fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+        
+        # Configure Plotly interactive toolbar with built-in PNG download option
+        plotly_config = {
+            "displayModeBar": True,
+            "displaylogo": False,
+            "modeBarButtonsToRemove": ["lasso2d", "select2d"],
+            "toImageButtonOptions": {
+                "format": "png",
+                "filename": f"analytics_chart_{int(time.time())}",
+                "height": 700,
+                "width": 1000,
+                "scale": 2
+            }
+        }
+
+        # Side layout: Chart on left, HTML download button on right
+        chart_col, export_col = st.columns([5, 1])
+        
+        with chart_col:
+            st.plotly_chart(fig, use_container_width=True, config=plotly_config)
+            
+        with export_col:
+            st.markdown("<br>", unsafe_allow_html=True)  # Visual alignment spacing
+            html_data = fig.to_html(include_plotlyjs="cdn")
+            st.download_button(
+                label="📥 Export HTML",
+                data=html_data,
+                file_name=f"chart_{int(time.time())}.html",
+                mime="text/html",
+                help="Download standalone interactive chart",
+                use_container_width=True
+            )
 
 # -----------------------------------------------------------------------------
 # Dynamic Suggested Questions Generator
