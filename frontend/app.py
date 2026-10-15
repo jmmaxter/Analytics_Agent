@@ -1,4 +1,5 @@
 import os
+import io
 import time
 import json
 import requests
@@ -169,10 +170,9 @@ def clear_backend_session(session_id: str) -> bool:
 # -----------------------------------------------------------------------------
 def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[str, Any]):
     """
-    Safely parses raw_data into a pandas DataFrame, renders an interactive Plotly chart,
-    and provides built-in PNG and standalone HTML export capabilities.
+    Safely parses raw data, renders an interactive Plotly chart, 
+    and provides both HTML and PDF export buttons.
     """
-    # 1. Parse raw_data if stringified
     if isinstance(raw_data, str):
         try:
             raw_data = json.loads(raw_data)
@@ -182,7 +182,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
     if not raw_data:
         return
 
-    # Convert dict of lists or list of dicts to DataFrame
     try:
         df = pd.DataFrame(raw_data)
     except Exception as e:
@@ -192,7 +191,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
     if df.empty or len(df.columns) == 0:
         return
 
-    # Automatically cast numeric columns stringified by DuckDB/FastAPI
     for col in df.columns:
         try:
             df[col] = pd.to_numeric(df[col])
@@ -205,49 +203,29 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
 
     fig = None
 
-    # Render Chart Based on Categorical & Numeric Dimensions
     if len(cat_cols) >= 2 and num_cols:
-        # Multi-category breakdown (e.g. Category + Region)
         fig = px.bar(
-            df,
-            x=cat_cols[0],
-            y=num_cols[0],
-            color=cat_cols[1],
-            barmode="group",
+            df, x=cat_cols[0], y=num_cols[0], color=cat_cols[1], barmode="group",
             title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()} & {cat_cols[1].replace('_', ' ').title()}",
             text_auto=True
         )
-
     elif cat_cols and num_cols:
-        # Single category breakdown
         fig = px.bar(
-            df,
-            x=cat_cols[0],
-            y=num_cols[0],
-            color=cat_cols[0],
+            df, x=cat_cols[0], y=num_cols[0], color=cat_cols[0],
             title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}",
             text_auto=True
         )
-
     elif date_cols and num_cols:
-        # Time-series trend
         fig = px.line(
-            df,
-            x=date_cols[0],
-            y=num_cols[0],
-            markers=True,
+            df, x=date_cols[0], y=num_cols[0], markers=True,
             title=f"📈 Trend of {num_cols[0].replace('_', ' ').title()} over {date_cols[0].replace('_', ' ').title()}"
         )
-
     elif len(df.columns) >= 2:
-        # Generic 2-column fallback
         fig = px.bar(df, x=df.columns[0], y=df.columns[1], text_auto=True)
 
-    # If the figure was successfully created, configure toolbar and render with export options
     if fig is not None:
         fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
         
-        # Configure Plotly interactive toolbar with built-in PNG download option
         plotly_config = {
             "displayModeBar": True,
             "displaylogo": False,
@@ -255,29 +233,49 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             "toImageButtonOptions": {
                 "format": "png",
                 "filename": f"analytics_chart_{int(time.time())}",
-                "height": 700,
-                "width": 1000,
                 "scale": 2
             }
         }
 
-        # Side layout: Chart on left, HTML download button on right
-        chart_col, export_col = st.columns([5, 1])
+        # Layout: Chart takes main width, export buttons take the right column
+        chart_col, export_col = st.columns([4, 1])
         
         with chart_col:
             st.plotly_chart(fig, use_container_width=True, config=plotly_config)
             
         with export_col:
-            st.markdown("<br>", unsafe_allow_html=True)  # Visual alignment spacing
+            st.markdown("<br>", unsafe_allow_html=True)  # Visual alignment spacer
+            
+            # 1. HTML Export Button (Interactive)
             html_data = fig.to_html(include_plotlyjs="cdn")
             st.download_button(
                 label="📥 Export HTML",
                 data=html_data,
                 file_name=f"chart_{int(time.time())}.html",
                 mime="text/html",
-                help="Download standalone interactive chart",
+                help="Download interactive HTML dashboard component",
                 use_container_width=True
             )
+            
+            # 2. PDF Export Button (Static Vector PDF)
+            try:
+                pdf_bytes = fig.to_image(format="pdf")
+                st.download_button(
+                    label="📄 Export PDF",
+                    data=pdf_bytes,
+                    file_name=f"chart_{int(time.time())}.pdf",
+                    mime="application/pdf",
+                    help="Download static print-ready PDF report",
+                    use_container_width=True
+                )
+            except Exception as e:
+                # Fallback if kaleido is missing or fails to initialize in container
+                st.button(
+                    "📄 PDF Unavailable", 
+                    disabled=True, 
+                    help=f"PDF generation requires the kaleido package. Details: {e}",
+                    use_container_width=True
+                )
 
 # -----------------------------------------------------------------------------
 # Dynamic Suggested Questions Generator
