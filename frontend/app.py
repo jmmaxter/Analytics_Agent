@@ -257,7 +257,7 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
                 use_container_width=True
             )
             
-            # 2. PDF Export Button (Static Vector PDF)
+            # 2. PDF Export Button (Native Vector PDF)
             try:
                 pdf_bytes = fig.to_image(format="pdf")
                 st.download_button(
@@ -269,11 +269,10 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
                     use_container_width=True
                 )
             except Exception as e:
-                # Fallback if kaleido is missing or fails to initialize in container
                 st.button(
                     "📄 PDF Unavailable", 
                     disabled=True, 
-                    help=f"PDF generation requires the kaleido package. Details: {e}",
+                    help=f"Details: {e}",
                     use_container_width=True
                 )
 
