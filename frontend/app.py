@@ -171,7 +171,7 @@ def clear_backend_session(session_id: str) -> bool:
 def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[str, Any]):
     """
     Safely parses raw data, renders an interactive Plotly chart, 
-    and provides both HTML and PDF export buttons.
+    and provides built-in PNG (via toolbar) and HTML export capabilities.
     """
     if isinstance(raw_data, str):
         try:
@@ -237,7 +237,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             }
         }
 
-        # Layout: Chart takes main width, export buttons take the right column
         chart_col, export_col = st.columns([4, 1])
         
         with chart_col:
@@ -246,7 +245,7 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
         with export_col:
             st.markdown("<br>", unsafe_allow_html=True)  # Visual alignment spacer
             
-            # 1. HTML Export Button (Interactive)
+            # HTML Export Button (Fully Interactive)
             html_data = fig.to_html(include_plotlyjs="cdn")
             st.download_button(
                 label="📥 Export HTML",
@@ -257,24 +256,9 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
                 use_container_width=True
             )
             
-            # 2. PDF Export Button (Native Vector PDF)
-            try:
-                pdf_bytes = fig.to_image(format="pdf")
-                st.download_button(
-                    label="📄 Export PDF",
-                    data=pdf_bytes,
-                    file_name=f"chart_{int(time.time())}.pdf",
-                    mime="application/pdf",
-                    help="Download static print-ready PDF report",
-                    use_container_width=True
-                )
-            except Exception as e:
-                st.button(
-                    "📄 PDF Unavailable", 
-                    disabled=True, 
-                    help=f"Details: {e}",
-                    use_container_width=True
-                )
+            st.caption("📄 **PDF Tip:** Click **Export HTML**, open the file in your browser, and press `Ctrl+P` (or `Cmd+P`) → **Save as PDF** for crisp vector quality.")
+            
+            
 
 # -----------------------------------------------------------------------------
 # Dynamic Suggested Questions Generator
