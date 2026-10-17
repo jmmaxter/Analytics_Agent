@@ -170,8 +170,8 @@ def clear_backend_session(session_id: str) -> bool:
 # -----------------------------------------------------------------------------
 def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[str, Any]):
     """
-    Safely parses raw data, renders an interactive Plotly chart, 
-    and provides built-in PNG (via toolbar) and HTML export capabilities.
+    Safely parses raw data, renders a vibrantly colored interactive Plotly chart,
+    and provides HTML export capabilities.
     """
     if isinstance(raw_data, str):
         try:
@@ -203,28 +203,64 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
 
     fig = None
 
+    # 1. Multi-category breakdown (Bar Chart with distinct color groups)
     if len(cat_cols) >= 2 and num_cols:
         fig = px.bar(
-            df, x=cat_cols[0], y=num_cols[0], color=cat_cols[1], barmode="group",
+            df, 
+            x=cat_cols[0], 
+            y=num_cols[0], 
+            color=cat_cols[1], 
+            barmode="group",
             title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()} & {cat_cols[1].replace('_', ' ').title()}",
-            text_auto=True
+            text_auto=True,
+            template="plotly_white",
+            color_discrete_sequence=px.colors.qualitative.Prism
         )
+
+    # 2. Single category breakdown (Colorful Bar Chart mapped to color)
     elif cat_cols and num_cols:
         fig = px.bar(
-            df, x=cat_cols[0], y=num_cols[0], color=cat_cols[0],
+            df, 
+            x=cat_cols[0], 
+            y=num_cols[0], 
+            color=cat_cols[0],
             title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}",
-            text_auto=True
+            text_auto=True,
+            template="plotly_white",
+            color_discrete_sequence=px.colors.qualitative.Safe
         )
+        fig.update_layout(showlegend=False)
+
+    # 3. Time-series trend (Colored Line Chart with markers)
     elif date_cols and num_cols:
         fig = px.line(
-            df, x=date_cols[0], y=num_cols[0], markers=True,
-            title=f"📈 Trend of {num_cols[0].replace('_', ' ').title()} over {date_cols[0].replace('_', ' ').title()}"
+            df, 
+            x=date_cols[0], 
+            y=num_cols[0], 
+            markers=True,
+            title=f"📈 Trend of {num_cols[0].replace('_', ' ').title()} over {date_cols[0].replace('_', ' ').title()}",
+            template="plotly_white"
         )
+        fig.update_traces(line=dict(width=3, color="#636EFA"))
+
+    # 4. Generic fallback
     elif len(df.columns) >= 2:
-        fig = px.bar(df, x=df.columns[0], y=df.columns[1], text_auto=True)
+        fig = px.bar(
+            df, 
+            x=df.columns[0], 
+            y=df.columns[1], 
+            color=df.columns[0],
+            text_auto=True,
+            template="plotly_white",
+            color_discrete_sequence=px.colors.qualitative.Bold
+        )
+        fig.update_layout(showlegend=False)
 
     if fig is not None:
-        fig.update_layout(margin=dict(l=10, r=10, t=40, b=10))
+        fig.update_layout(
+            margin=dict(l=10, r=10, t=40, b=10),
+            xaxis_tickangle=-35 if len(df) > 5 else 0
+        )
         
         plotly_config = {
             "displayModeBar": True,
@@ -243,9 +279,8 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             st.plotly_chart(fig, use_container_width=True, config=plotly_config)
             
         with export_col:
-            st.markdown("<br>", unsafe_allow_html=True)  # Visual alignment spacer
+            st.markdown("<br>", unsafe_allow_html=True)
             
-            # HTML Export Button (Fully Interactive)
             html_data = fig.to_html(include_plotlyjs="cdn")
             st.download_button(
                 label="📥 Export HTML",
@@ -256,7 +291,7 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
                 use_container_width=True
             )
             
-            st.caption("📄 **PDF Tip:** Click **Export HTML**, open the file in your browser, and press `Ctrl+P` (or `Cmd+P`) → **Save as PDF** for crisp vector quality.")
+            st.caption("📄 **PDF Tip:** Click **Export HTML**, open the file in your browser, and press `Ctrl+P` (or `Cmd+P`) → **Save as PDF**.")
             
             
 
