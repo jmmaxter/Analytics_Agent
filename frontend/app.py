@@ -292,14 +292,12 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             )
             
             st.caption("📄 **PDF Tip:** Click **Export HTML**, open the file in your browser, and press `Ctrl+P` (or `Cmd+P`) → **Save as PDF**.")
-            
-            
 
 # -----------------------------------------------------------------------------
-# Dynamic Suggested Questions Generator
+# Dynamic Suggested Questions Generator (Schema-Agnostic Taxonomy)
 # -----------------------------------------------------------------------------
 def generate_suggested_questions(summary: Optional[Dict[str, Any]]) -> Dict[str, Any]:
-    """Generates contextual suggested queries based on actual columns in the dataset."""
+    """Generates contextual suggested queries based on actual columns in the dataset using the refined taxonomy."""
     if not summary:
         cat_col, cat_col2 = "category", "group"
         num_col = "value"
@@ -318,46 +316,53 @@ def generate_suggested_questions(summary: Optional[Dict[str, Any]]) -> Dict[str,
         date_col = date_cols[0] if date_cols else "date"
 
     return {
-        "📊 Dataset Scale": {
-            "tool": "get_row_count",
-            "queries": [
-                "How many total records exist in this dataset?",
-                "What is the total row count?"
-            ]
-        },
-        "🔢 Metric Summaries": {
+        "📊 Metric Summaries": {
             "tool": "aggregate_metric",
             "queries": [
-                f"What is the grand total {num_col}?",
-                f"What is the average {num_col}?"
+                f"What is the total record count and summary of available metrics for {num_col}?",
+                f"Show me the average, minimum, and maximum values for {num_col}."
             ]
         },
-        "🔠 Breakdown & Grouping": {
+        "📂 Breakdown & Grouping": {
             "tool": "group_by_analysis",
             "queries": [
-                f"What is the total {num_col} grouped by {cat_col}?",
-                f"What is the record count grouped by {cat_col}?"
+                f"Break down {num_col} by {cat_col}.",
+                f"Give me a multi-level performance breakdown of {num_col} grouped by {cat_col} and {cat_col2}."
             ]
         },
-        "🏆 Top N & Rankings": {
+        "🏆 Top N & Ranking": {
             "tool": "top_n_ranking",
             "queries": [
-                f"What are the top 5 {cat_col} entries by total {num_col}?",
-                f"Which top 3 {cat_col} entries generated the highest average {num_col}?"
+                f"What are the top 5 records ranked by {num_col} in descending order?",
+                f"Show me the lowest-performing {cat_col} based on {num_col}."
             ]
         },
         "📈 Period-over-Period": {
             "tool": "period_over_period",
             "queries": [
-                f"What is the Month-over-Month trend for {num_col} using {date_col}?",
-                f"What is the Year-over-Year trend for total {num_col}?"
+                f"Show me the trend of {num_col} over time by {date_col}.",
+                f"How has {num_col} progressed across available time intervals?"
             ]
         },
-        "🤝 Cross-Entity Performance": {
+        "🔗 Cross-Entity Performance": {
             "tool": "cross_entity_performance",
             "queries": [
-                f"How do different {cat_col} values compare in total {num_col}?",
-                f"What is the distribution of {num_col} across {cat_col2}?"
+                f"How do {cat_col} and {cat_col2} interact regarding {num_col} performance?",
+                f"Compare metrics across {cat_col} and {cat_col2} simultaneously."
+            ]
+        },
+        "🔍 Data Quality & Profiling": {
+            "tool": "data_profiling",
+            "queries": [
+                "Check for missing values, null rates, and data completeness across all columns.",
+                "Profile the dataset schema to identify unique value counts, data types, and potential anomalies."
+            ]
+        },
+        "🥧 Share of Total & Contribution": {
+            "tool": "share_of_total",
+            "queries": [
+                f"What is the percentage contribution (share of total) of each {cat_col} to the overall {num_col}?",
+                f"Show the relative proportion and weight of each {cat_col} against the aggregate sum of {num_col}."
             ]
         }
     }
@@ -447,7 +452,7 @@ else:
 
     st.divider()
 
-    # Dynamic Categorized Suggested Questions
+    # Dynamic Categorized Suggested Questions (Schema-Agnostic Taxonomy)
     suggested_questions = generate_suggested_questions(summary)
     st.markdown("##### 💡 Suggested Questions (Contextualized to Your Dataset)")
     
