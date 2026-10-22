@@ -126,6 +126,36 @@ def upload_file_to_backend(uploaded_file) -> Optional[dict]:
         st.error(f"Could not establish connection to backend at `{API_BASE_URL}`.")
         return None
 
+def upload_multi_files_to_backend(uploaded_files) -> Optional[dict]:
+    """Sends multiple files to FastAPI backend for multi-table DuckDB ingestion."""
+    if not st.session_state.get("backend_online", False):
+        if not ensure_backend_healthy():
+            st.error(f"❌ Backend service at `{BASE_HOST_URL}` is unreachable.")
+            return None
+
+    try:
+        files = [
+            ("files", (f.name, f.getvalue(), f.type))
+            for f in uploaded_files
+        ]
+        response = requests.post(
+            f"{API_BASE_URL}/dataset/upload-multi", 
+            files=files,
+            timeout=120
+        )
+        if response.status_code == 201:
+            return response.json()
+        else:
+            try:
+                error_detail = response.json().get("detail", response.text)
+            except Exception:
+                error_detail = response.text or f"HTTP {response.status_code}"
+            st.error(f"Upload failed ({response.status_code}): {error_detail}")
+            return None
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        st.error("Could not establish connection to backend for multi-file upload.")
+        return None
+
 def submit_query_to_backend(session_id: str, query: str) -> Optional[dict]:
     """Sends natural language query to FastAPI endpoint for execution."""
     if not st.session_state.get("backend_online", False):
@@ -388,20 +418,47 @@ with st.sidebar:
 
     st.divider()
 
-    uploaded_file = st.file_uploader(
-        "Upload dataset (CSV or Excel)",
-        type=["csv", "xlsx", "xls"],
-        help="Upload a dataset to begin asking natural language questions."
+    # Workspace Mode Selector
+    workspace_mode = st.radio(
+        "Select Workspace Mode:",
+        ["Single Dataset", "Enterprise BI Project (Multi-Table)"],
+        help="Choose Single Dataset for fast ad-hoc queries or Multi-Table for Star Schema relational projects."
     )
-    
-    if uploaded_file and st.session_state.session_id is None:
-        with st.spinner("Ingesting dataset and building DuckDB workspace..."):
-            summary = upload_file_to_backend(uploaded_file)
-            if summary:
-                st.session_state.session_id = summary["session_id"]
-                st.session_state.dataset_summary = summary
-                st.success("Dataset loaded successfully!")
-                st.rerun()
+
+    st.divider()
+
+    # Conditional Upload Flow based on Workspace Mode
+    if workspace_mode == "Single Dataset":
+        uploaded_file = st.file_uploader(
+            "Upload dataset (CSV or Excel)",
+            type=["csv", "xlsx", "xls"],
+            help="Upload a dataset to begin asking natural language questions."
+        )
+        
+        if uploaded_file and st.session_state.session_id is None:
+            with st.spinner("Ingesting dataset and building DuckDB workspace..."):
+                summary = upload_file_to_backend(uploaded_file)
+                if summary:
+                    st.session_state.session_id = summary["session_id"]
+                    st.session_state.dataset_summary = summary
+                    st.success("Dataset loaded successfully!")
+                    st.rerun()
+    else:
+        uploaded_files = st.file_uploader(
+            "Upload Fact & Dimension Tables (Multiple)",
+            type=["csv", "xlsx", "xls"],
+            accept_multiple_files=True,
+            help="Upload multiple related tables (e.g., Fact shipments and Dim carriers)."
+        )
+        
+        if uploaded_files and st.session_state.session_id is None:
+            with st.spinner("Ingesting BI Project tables into DuckDB workspace..."):
+                summary = upload_multi_files_to_backend(uploaded_files)
+                if summary:
+                    st.session_state.session_id = summary["session_id"]
+                    st.session_state.dataset_summary = summary
+                    st.success("BI Project tables loaded successfully!")
+                    st.rerun()
 
     if st.session_state.session_id and st.session_state.dataset_summary:
         st.divider()

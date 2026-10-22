@@ -294,3 +294,34 @@ async def clear_session(session_id: str):
     if not success:
         raise HTTPException(status_code=404, detail="Session not found.")
     return {"message": "Session cleared successfully."}
+
+@router.post("/dataset/upload-multi", response_model=DatasetSummary, status_code=201)
+async def upload_multi_dataset(files: list[UploadFile] = File(...)):
+    """Uploads multiple CSV/Excel files for multi-table Star Schema BI projects."""
+    allowed_extensions = [".csv", ".xlsx", ".xls"]
+    tmp_file_paths = []
+    file_data_list = []
+
+    try:
+        for file in files:
+            filename = file.filename or ""
+            file_ext = os.path.splitext(filename)[1].lower()
+            if file_ext not in allowed_extensions:
+                raise HTTPException(status_code=400, detail=f"Invalid file type '{file_ext}'.")
+
+            with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as tmp_file:
+                content = await file.read()
+                tmp_file.write(content)
+                tmp_file_paths.append(tmp_file.name)
+                file_data_list.append((tmp_file.name, filename))
+
+        summary = session_manager.create_multi_table_session(file_data_list)
+        return summary
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process datasets: {str(e)}")
+    finally:
+        for path in tmp_file_paths:
+            if os.path.exists(path):
+                os.remove(path)
