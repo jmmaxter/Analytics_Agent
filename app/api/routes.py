@@ -136,50 +136,110 @@ async def execute_query(payload: QueryRequest):
             raw_metric = tool_args.get("metric_column")
             agg_func = tool_args.get("aggregation", "SUM").upper()
 
-            non_id_cols = [c for c in schema_summary['columns'] if not (c.lower().endswith("_id") or c.lower() == "id")]
-            if not non_id_cols:
-                non_id_cols = schema_summary['columns']
-
-            dimensions = resolve_columns(raw_dims, schema_summary['columns'])
-            dimensions = [d for d in dimensions if not (d.lower().endswith("_id") or d.lower() == "id")]
+            tables_meta = schema_summary.get("tables", {})
             
-            if not dimensions:
-                prompt_lower = payload.query.lower()
-                matched = [c for c in non_id_cols if c.lower() in prompt_lower]
-                dimensions = matched if matched else [non_id_cols[0]]
+            # MULTI-TABLE STAR SCHEMA JOIN RESOLVER (Enterprise BI Mode)
+            if len(tables_meta) > 1:
+                fact_table = next((t for t in tables_meta.keys() if "fact" in t), list(tables_meta.keys())[0])
+                dim_tables = [t for t in tables_meta.keys() if t != fact_table]
+                
+                # Resolve group dimension across all table columns
+                group_col = None
+                dim_source_table = fact_table
+                
+                # Check raw dims or prompt query text for dimension matches
+                search_terms = [str(d).lower() for d in (raw_dims if isinstance(raw_dims, list) else [raw_dims])]
+                search_terms.append(payload.query.lower())
 
-            metric_col = None
-            if raw_metric:
-                resolved_m = resolve_columns([raw_metric], schema_summary['columns'])
-                if resolved_m:
-                    metric_col = resolved_m[0]
-            
-            if not metric_col:
+                for dt in dim_tables:
+                    for col in tables_meta[dt]["columns"]:
+                        if any(term in col.lower() for term in ["carrier", "hub", "region", "name", "category", "mode"] if term in payload.query.lower()):
+                            group_col = col
+                            dim_source_table = dt
+                            break
+                    if group_col:
+                        break
+                
+                # Fallback if specific dimension wasn't matched in dim tables
+                if not group_col:
+                    for dt in dim_tables:
+                        text_cols = [c for c, dt_type in tables_meta[dt]["schema_types"].items() if "VARCHAR" in dt_type.upper() or "TEXT" in dt_type.upper()]
+                        if text_cols:
+                            group_col = text_cols[0]
+                            dim_source_table = dt
+                            break
+                if not group_col:
+                    group_col = tables_meta[fact_table]["columns"][1]
+
+                # Resolve metric column from fact table (including costs, amounts, weights, revenue)
+                fact_cols = tables_meta[fact_table]["columns"]
                 metric_col = next(
-                    (c for c in schema_summary['columns'] if any(m in c.lower() for m in ["revenue", "sales", "amount", "total", "price"])),
-                    None
+                    (c for c in fact_cols if any(m in c.lower() for m in ["cost", "revenue", "sales", "amount", "price", "weight"])),
+                    fact_cols[-1]
                 )
 
-            escaped_dims = [f'"{d}"' for d in dimensions]
-            dim_clause = ", ".join(escaped_dims)
-            where_clause = " AND ".join([f"{d} IS NOT NULL" for d in escaped_dims])
+                # Find common join key (e.g., carrier_id) between fact and dimension table
+                dim_cols = tables_meta[dim_source_table]["columns"]
+                join_key = next((c for c in fact_cols if c in dim_cols), f"{dim_source_table}_id")
+                if join_key not in fact_cols or join_key not in dim_cols:
+                    # Fallback key lookup ending with _id
+                    join_key = next((c for c in fact_cols if c.endswith("_id")), "carrier_id")
 
-            if metric_col and metric_col not in dimensions:
                 sql_query = f"""
-                    SELECT {dim_clause}, ROUND({agg_func}("{metric_col}"), 2) AS total_{metric_col}
-                    FROM active_dataset
-                    WHERE {where_clause}
-                    GROUP BY {dim_clause}
-                    ORDER BY total_{metric_col} DESC
+                    SELECT d."{group_col}", ROUND({agg_func}(f."{metric_col}"), 2) AS total_{metric_col.lower()}
+                    FROM {fact_table} f
+                    JOIN {dim_source_table} d ON f."{join_key}" = d."{join_key}"
+                    WHERE d."{group_col}" IS NOT NULL
+                    GROUP BY d."{group_col}"
+                    ORDER BY total_{metric_col.lower()} DESC
                 """
             else:
-                sql_query = f"""
-                    SELECT {dim_clause}, COUNT(*) AS record_count
-                    FROM active_dataset
-                    WHERE {where_clause}
-                    GROUP BY {dim_clause}
-                    ORDER BY record_count DESC
-                """
+                # SINGLE DATASET MODE (Existing Logic)
+                non_id_cols = [c for c in schema_summary['columns'] if not (c.lower().endswith("_id") or c.lower() == "id")]
+                if not non_id_cols:
+                    non_id_cols = schema_summary['columns']
+
+                dimensions = resolve_columns(raw_dims, schema_summary['columns'])
+                dimensions = [d for d in dimensions if not (d.lower().endswith("_id") or d.lower() == "id")]
+                
+                if not dimensions:
+                    prompt_lower = payload.query.lower()
+                    matched = [c for c in non_id_cols if c.lower() in prompt_lower]
+                    dimensions = matched if matched else [non_id_cols[0]]
+
+                metric_col = None
+                if raw_metric:
+                    resolved_m = resolve_columns([raw_metric], schema_summary['columns'])
+                    if resolved_m:
+                        metric_col = resolved_m[0]
+                
+                if not metric_col:
+                    metric_col = next(
+                        (c for c in schema_summary['columns'] if any(m in c.lower() for m in ["revenue", "sales", "amount", "total", "price"])),
+                        None
+                    )
+
+                escaped_dims = [f'"{d}"' for d in dimensions]
+                dim_clause = ", ".join(escaped_dims)
+                where_clause = " AND ".join([f"{d} IS NOT NULL" for d in escaped_dims])
+
+                if metric_col and metric_col not in dimensions:
+                    sql_query = f"""
+                        SELECT {dim_clause}, ROUND({agg_func}("{metric_col}"), 2) AS total_{metric_col}
+                        FROM active_dataset
+                        WHERE {where_clause}
+                        GROUP BY {dim_clause}
+                        ORDER BY total_{metric_col} DESC
+                    """
+                else:
+                    sql_query = f"""
+                        SELECT {dim_clause}, COUNT(*) AS record_count
+                        FROM active_dataset
+                        WHERE {where_clause}
+                        GROUP BY {dim_clause}
+                        ORDER BY record_count DESC
+                    """
+            
             raw_res = conn.execute(sql_query).df()
 
         # --- TOOL 4: Top N Leaderboard Ranking ---

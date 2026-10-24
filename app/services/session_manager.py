@@ -89,7 +89,7 @@ class SessionManager:
             self.delete_session(sid)
 
     def create_multi_table_session(self, file_data_list: list[tuple[str, str]]) -> Dict[str, Any]:
-        """Ingests multiple files into separate named tables in the same DuckDB session database."""
+        """Ingests multiple files into separate named tables in the DuckDB session database."""
         self.cleanup_expired_sessions()
         session_id = str(uuid.uuid4())
         session_dir = os.path.join(UPLOAD_DIR, session_id)
