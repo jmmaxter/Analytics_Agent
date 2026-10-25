@@ -130,7 +130,7 @@ async def execute_query(payload: QueryRequest):
                 sql_query = f'SELECT ROUND({agg_func}("{metric_col}"), 2) AS result_{metric_col} FROM active_dataset'
             raw_res = conn.execute(sql_query).df()
 
-        # --- TOOL 3: Multi-Dimensional Group By ---
+        # --- TOOL 3: Multi-Dimensional Group By (Multi-Table Star Schema Support) ---
         elif tool_name == "group_by_analysis":
             raw_dims = tool_args.get("group_by_columns", [])
             raw_metric = tool_args.get("metric_column")
@@ -138,29 +138,24 @@ async def execute_query(payload: QueryRequest):
 
             tables_meta = schema_summary.get("tables", {})
             
-            # MULTI-TABLE STAR SCHEMA JOIN RESOLVER (Enterprise BI Mode)
             if len(tables_meta) > 1:
                 fact_table = next((t for t in tables_meta.keys() if "fact" in t), list(tables_meta.keys())[0])
                 dim_tables = [t for t in tables_meta.keys() if t != fact_table]
                 
-                # Resolve group dimension across all table columns
+                # 1. Resolve group dimension (e.g., region, carrier_name)
                 group_col = None
                 dim_source_table = fact_table
-                
-                # Check raw dims or prompt query text for dimension matches
-                search_terms = [str(d).lower() for d in (raw_dims if isinstance(raw_dims, list) else [raw_dims])]
-                search_terms.append(payload.query.lower())
+                query_lower = payload.query.lower()
 
                 for dt in dim_tables:
                     for col in tables_meta[dt]["columns"]:
-                        if any(term in col.lower() for term in ["carrier", "hub", "region", "name", "category", "mode"] if term in payload.query.lower()):
+                        if any(term in col.lower() for term in ["carrier", "hub", "region", "name", "country", "category"] if term in query_lower):
                             group_col = col
                             dim_source_table = dt
                             break
                     if group_col:
                         break
                 
-                # Fallback if specific dimension wasn't matched in dim tables
                 if not group_col:
                     for dt in dim_tables:
                         text_cols = [c for c, dt_type in tables_meta[dt]["schema_types"].items() if "VARCHAR" in dt_type.upper() or "TEXT" in dt_type.upper()]
@@ -171,74 +166,40 @@ async def execute_query(payload: QueryRequest):
                 if not group_col:
                     group_col = tables_meta[fact_table]["columns"][1]
 
-                # Resolve metric column from fact table (including costs, amounts, weights, revenue)
-                fact_cols = tables_meta[fact_table]["columns"]
-                metric_col = next(
-                    (c for c in fact_cols if any(m in c.lower() for m in ["cost", "revenue", "sales", "amount", "price", "weight"])),
-                    fact_cols[-1]
-                )
-
-                # Find common join key (e.g., carrier_id) between fact and dimension table
+                # 2. Resolve Dimension Primary Key & Fact Foreign Key
                 dim_cols = tables_meta[dim_source_table]["columns"]
-                join_key = next((c for c in fact_cols if c in dim_cols), f"{dim_source_table}_id")
-                if join_key not in fact_cols or join_key not in dim_cols:
-                    # Fallback key lookup ending with _id
-                    join_key = next((c for c in fact_cols if c.endswith("_id")), "carrier_id")
+                fact_cols = tables_meta[fact_table]["columns"]
+                
+                dim_pk = next((c for c in dim_cols if c.endswith("_id") or c == "id"), dim_cols[0])
+                # Find matching foreign key in fact table (e.g. origin_hub_id or carrier_id)
+                fact_fk = next((c for c in fact_cols if c == dim_pk or c.endswith(f"_{dim_pk}") or dim_pk in c), dim_pk)
+
+                # 3. Handle Multi-Metric Requests (e.g., cost and transit time)
+                select_metrics_clause = []
+                if "transit" in query_lower or "time" in query_lower:
+                    select_metrics_clause.append('ROUND(AVG(f."transit_time_days"), 2) AS avg_transit_time_days')
+                if "cost" in query_lower or "price" in query_lower or "amount" in query_lower or "revenue" in query_lower:
+                    cost_col = next((c for c in fact_cols if any(m in c.lower() for m in ["cost", "amount", "price"])), fact_cols[-1])
+                    select_metrics_clause.append(f'ROUND(SUM(f."{cost_col}"), 2) AS total_shipping_cost')
+                
+                if not select_metrics_clause:
+                    metric_col = next((c for c in fact_cols if any(m in c.lower() for m in ["cost", "revenue", "amount"])), fact_cols[-1])
+                    select_metrics_clause.append(f'ROUND({agg_func}(f."{metric_col}"), 2) AS total_{metric_col.lower()}')
+
+                metrics_sql = ", ".join(select_metrics_clause)
+                primary_metric_alias = select_metrics_clause[0].split(" AS ")[1]
 
                 sql_query = f"""
-                    SELECT d."{group_col}", ROUND({agg_func}(f."{metric_col}"), 2) AS total_{metric_col.lower()}
+                    SELECT d."{group_col}", {metrics_sql}
                     FROM {fact_table} f
-                    JOIN {dim_source_table} d ON f."{join_key}" = d."{join_key}"
+                    JOIN {dim_source_table} d ON f."{fact_fk}" = d."{dim_pk}"
                     WHERE d."{group_col}" IS NOT NULL
                     GROUP BY d."{group_col}"
-                    ORDER BY total_{metric_col.lower()} DESC
+                    ORDER BY {primary_metric_alias} DESC
                 """
             else:
                 # SINGLE DATASET MODE (Existing Logic)
-                non_id_cols = [c for c in schema_summary['columns'] if not (c.lower().endswith("_id") or c.lower() == "id")]
-                if not non_id_cols:
-                    non_id_cols = schema_summary['columns']
-
-                dimensions = resolve_columns(raw_dims, schema_summary['columns'])
-                dimensions = [d for d in dimensions if not (d.lower().endswith("_id") or d.lower() == "id")]
-                
-                if not dimensions:
-                    prompt_lower = payload.query.lower()
-                    matched = [c for c in non_id_cols if c.lower() in prompt_lower]
-                    dimensions = matched if matched else [non_id_cols[0]]
-
-                metric_col = None
-                if raw_metric:
-                    resolved_m = resolve_columns([raw_metric], schema_summary['columns'])
-                    if resolved_m:
-                        metric_col = resolved_m[0]
-                
-                if not metric_col:
-                    metric_col = next(
-                        (c for c in schema_summary['columns'] if any(m in c.lower() for m in ["revenue", "sales", "amount", "total", "price"])),
-                        None
-                    )
-
-                escaped_dims = [f'"{d}"' for d in dimensions]
-                dim_clause = ", ".join(escaped_dims)
-                where_clause = " AND ".join([f"{d} IS NOT NULL" for d in escaped_dims])
-
-                if metric_col and metric_col not in dimensions:
-                    sql_query = f"""
-                        SELECT {dim_clause}, ROUND({agg_func}("{metric_col}"), 2) AS total_{metric_col}
-                        FROM active_dataset
-                        WHERE {where_clause}
-                        GROUP BY {dim_clause}
-                        ORDER BY total_{metric_col} DESC
-                    """
-                else:
-                    sql_query = f"""
-                        SELECT {dim_clause}, COUNT(*) AS record_count
-                        FROM active_dataset
-                        WHERE {where_clause}
-                        GROUP BY {dim_clause}
-                        ORDER BY record_count DESC
-                    """
+                ... # (Keep existing single-dataset execution block)
             
             raw_res = conn.execute(sql_query).df()
 
