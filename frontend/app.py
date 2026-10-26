@@ -200,8 +200,8 @@ def clear_backend_session(session_id: str) -> bool:
 # -----------------------------------------------------------------------------
 def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[str, Any]):
     """
-    Safely parses raw data, renders a vibrantly colored interactive Plotly chart,
-    and provides HTML export capabilities.
+    Safely parses raw data, renders vibrantly colored interactive Plotly charts 
+    (supporting single or multiple numeric metrics), and provides HTML export capabilities.
     """
     if isinstance(raw_data, str):
         try:
@@ -231,9 +231,60 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
     cat_cols = [c for c in df.columns if c not in num_cols]
     date_cols = [c for c in df.columns if any(k in c.lower() for k in ["date", "time", "year", "month", "day", "period"])]
 
+    if not cat_cols and not date_cols and len(df.columns) >= 1:
+        cat_cols = [df.columns[0]]
+
+    # If we have multiple numeric metrics (e.g. cost and transit time), render a chart for each metric
+    if len(num_cols) > 1 and cat_cols:
+        st.markdown("### 📊 Multi-Metric Visual Breakdown")
+        for num_col in num_cols:
+            fig = px.bar(
+                df, 
+                x=cat_cols[0], 
+                y=num_col,
+                color=cat_cols[0],
+                title=f"📊 {num_col.replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}",
+                text_auto=True,
+                template="plotly_white",
+                color_discrete_sequence=px.colors.qualitative.Safe
+            )
+            fig.update_layout(
+                showlegend=False,
+                margin=dict(l=10, r=10, t=40, b=10),
+                xaxis_tickangle=-35 if len(df) > 5 else 0
+            )
+            
+            plotly_config = {
+                "displayModeBar": True,
+                "displaylogo": False,
+                "modeBarButtonsToRemove": ["lasso2d", "select2d"],
+                "toImageButtonOptions": {
+                    "format": "png",
+                    "filename": f"analytics_chart_{num_col}_{int(time.time())}",
+                    "scale": 2
+                }
+            }
+            
+            chart_col, export_col = st.columns([4, 1])
+            with chart_col:
+                st.plotly_chart(fig, use_container_width=True, config=plotly_config)
+            with export_col:
+                st.markdown("<br>", unsafe_allow_html=True)
+                html_data = fig.to_html(include_plotlyjs="cdn")
+                st.download_button(
+                    label=f"📥 Export HTML",
+                    data=html_data,
+                    file_name=f"chart_{num_col}_{int(time.time())}.html",
+                    mime="text/html",
+                    help=f"Download interactive HTML chart for {num_col}",
+                    use_container_width=True,
+                    key=f"dl_{num_col}"
+                )
+        return
+
+    # Standard single-metric rendering logic for existing views
     fig = None
 
-    # 1. Multi-category breakdown (Bar Chart with distinct color groups)
     if len(cat_cols) >= 2 and num_cols:
         fig = px.bar(
             df, 
@@ -246,8 +297,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             template="plotly_white",
             color_discrete_sequence=px.colors.qualitative.Prism
         )
-
-    # 2. Single category breakdown (Colorful Bar Chart mapped to color)
     elif cat_cols and num_cols:
         fig = px.bar(
             df, 
@@ -260,8 +309,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             color_discrete_sequence=px.colors.qualitative.Safe
         )
         fig.update_layout(showlegend=False)
-
-    # 3. Time-series trend (Colored Line Chart with markers)
     elif date_cols and num_cols:
         fig = px.line(
             df, 
@@ -272,8 +319,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             template="plotly_white"
         )
         fig.update_traces(line=dict(width=3, color="#636EFA"))
-
-    # 4. Generic fallback
     elif len(df.columns) >= 2:
         fig = px.bar(
             df, 
@@ -304,13 +349,10 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
         }
 
         chart_col, export_col = st.columns([4, 1])
-        
         with chart_col:
             st.plotly_chart(fig, use_container_width=True, config=plotly_config)
-            
         with export_col:
             st.markdown("<br>", unsafe_allow_html=True)
-            
             html_data = fig.to_html(include_plotlyjs="cdn")
             st.download_button(
                 label="📥 Export HTML",
@@ -320,7 +362,6 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
                 help="Download interactive HTML dashboard component",
                 use_container_width=True
             )
-            
             st.caption("📄 **PDF Tip:** Click **Export HTML**, open the file in your browser, and press `Ctrl+P` (or `Cmd+P`) → **Save as PDF**.")
 
 # -----------------------------------------------------------------------------
