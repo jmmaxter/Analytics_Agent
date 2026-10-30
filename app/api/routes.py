@@ -142,64 +142,122 @@ async def execute_query(payload: QueryRequest):
                 fact_table = next((t for t in tables_meta.keys() if "fact" in t), list(tables_meta.keys())[0])
                 dim_tables = [t for t in tables_meta.keys() if t != fact_table]
                 
-                # 1. Resolve group dimension (e.g., region, carrier_name)
-                group_col = None
-                dim_source_table = fact_table
                 query_lower = payload.query.lower()
+                resolved_dimensions = []
+                joined_tables = set()
+                join_clauses = []
 
-                for dt in dim_tables:
-                    for col in tables_meta[dt]["columns"]:
-                        if any(term in col.lower() for term in ["carrier", "hub", "region", "name", "country", "category"] if term in query_lower):
-                            group_col = col
-                            dim_source_table = dt
-                            break
-                    if group_col:
-                        break
-                
-                if not group_col:
-                    for dt in dim_tables:
-                        text_cols = [c for c, dt_type in tables_meta[dt]["schema_types"].items() if "VARCHAR" in dt_type.upper() or "TEXT" in dt_type.upper()]
-                        if text_cols:
-                            group_col = text_cols[0]
-                            dim_source_table = dt
-                            break
-                if not group_col:
-                    group_col = tables_meta[fact_table]["columns"][1]
+                # Map business terms to their respective dimension tables, columns, and foreign keys
+                dim_mapping = {
+                    "product_category": ("dim_products", "Product_Category", "Product_ID"),
+                    "category": ("dim_products", "Product_Category", "Product_ID"),
+                    "region": ("dim_stores", "Region", "Store_ID"),
+                    "store_location": ("dim_stores", "Store_Location", "Store_ID"),
+                    "customer_segment": ("dim_customers", "Customer_Segment", "Customer_ID"),
+                    "sales_rep": ("dim_sales_rep", "Sales_Rep", "Rep_ID"),
+                    "marketing_channel": ("dim_sales_rep", "Marketing_Channel", "Rep_ID"),
+                }
 
-                # 2. Resolve Dimension Primary Key & Fact Foreign Key
-                dim_cols = tables_meta[dim_source_table]["columns"]
+                # Check prompt or raw_dims for matching dimensions
+                search_targets = [query_lower]
+                if isinstance(raw_dims, list):
+                    search_targets.extend([str(d).lower() for d in raw_dims])
+                elif isinstance(raw_dims, str):
+                    search_targets.append(raw_dims.lower())
+
+                for term, (dtable, dcol, fkey) in dim_mapping.items():
+                    if any(term in target for target in search_targets):
+                        if dtable in tables_meta and (dtable, dcol) not in resolved_dimensions:
+                            resolved_dimensions.append((dtable, dcol))
+                            if dtable not in joined_tables and dtable != fact_table:
+                                joined_tables.add(dtable)
+                                join_clauses.append(f'JOIN {dtable} ON {fact_table}."{fkey}" = {dtable}."{fkey}"')
+
+                # Fallback if no specific dimension was matched
+                if not resolved_dimensions:
+                    dtable = dim_tables[0]
+                    text_cols = [c for c, t in tables_meta[dtable]["schema_types"].items() if "VARCHAR" in t.upper() or "TEXT" in t.upper()]
+                    dcol = text_cols[0] if text_cols else tables_meta[dtable]["columns"][1]
+                    fkey = next((c for c in tables_meta[fact_table]["columns"] if c in tables_meta[dtable]["columns"] or c.endswith("_id")), f"{dtable.replace('dim_', '')}_id")
+                    resolved_dimensions.append((dtable, dcol))
+                    join_clauses.append(f'JOIN {dtable} ON {fact_table}."{fkey}" = {dtable}."{fkey}"')
+
+                dim_selects = [f'{dt}."{col}"' for dt, col in resolved_dimensions]
+                dim_group_by = [f'{dt}."{col}"' for dt, col in resolved_dimensions]
+                where_not_null = " AND ".join([f'{dt}."{col}" IS NOT NULL' for dt, col in resolved_dimensions])
+
+                # Resolve metrics (supporting single or multi-metric queries like revenue and profit)
                 fact_cols = tables_meta[fact_table]["columns"]
-                
-                dim_pk = next((c for c in dim_cols if c.endswith("_id") or c == "id"), dim_cols[0])
-                # Find matching foreign key in fact table (e.g. origin_hub_id or carrier_id)
-                fact_fk = next((c for c in fact_cols if c == dim_pk or c.endswith(f"_{dim_pk}") or dim_pk in c), dim_pk)
-
-                # 3. Handle Multi-Metric Requests (e.g., cost and transit time)
                 select_metrics_clause = []
-                if "transit" in query_lower or "time" in query_lower:
-                    select_metrics_clause.append('ROUND(AVG(f."transit_time_days"), 2) AS avg_transit_time_days')
-                if "cost" in query_lower or "price" in query_lower or "amount" in query_lower or "revenue" in query_lower:
-                    cost_col = next((c for c in fact_cols if any(m in c.lower() for m in ["cost", "amount", "price"])), fact_cols[-1])
-                    select_metrics_clause.append(f'ROUND(SUM(f."{cost_col}"), 2) AS total_shipping_cost')
                 
+                if "profit" in query_lower:
+                    select_metrics_clause.append(f'ROUND({agg_func}({fact_table}."Profit"), 2) AS total_profit')
+                if "revenue" in query_lower or "sales" in query_lower:
+                    select_metrics_clause.append(f'ROUND({agg_func}({fact_table}."Revenue"), 2) AS total_revenue')
+                if "unit" in query_lower:
+                    select_metrics_clause.append(f'ROUND({agg_func}({fact_table}."Units_Sold"), 2) AS total_units_sold')
+
                 if not select_metrics_clause:
-                    metric_col = next((c for c in fact_cols if any(m in c.lower() for m in ["cost", "revenue", "amount"])), fact_cols[-1])
-                    select_metrics_clause.append(f'ROUND({agg_func}(f."{metric_col}"), 2) AS total_{metric_col.lower()}')
+                    metric_col = next((c for c in fact_cols if any(m in c.lower() for m in ["revenue", "profit", "sales", "amount"])), fact_cols[-1])
+                    select_metrics_clause.append(f'ROUND({agg_func}({fact_table}."{metric_col}"), 2) AS total_{metric_col.lower()}')
 
                 metrics_sql = ", ".join(select_metrics_clause)
                 primary_metric_alias = select_metrics_clause[0].split(" AS ")[1]
 
                 sql_query = f"""
-                    SELECT d."{group_col}", {metrics_sql}
-                    FROM {fact_table} f
-                    JOIN {dim_source_table} d ON f."{fact_fk}" = d."{dim_pk}"
-                    WHERE d."{group_col}" IS NOT NULL
-                    GROUP BY d."{group_col}"
+                    SELECT {", ".join(dim_selects)}, {metrics_sql}
+                    FROM {fact_table}
+                    {" ".join(join_clauses)}
+                    WHERE {where_not_null}
+                    GROUP BY {", ".join(dim_group_by)}
                     ORDER BY {primary_metric_alias} DESC
                 """
             else:
-                # SINGLE DATASET MODE (Existing Logic)
-                ... # (Keep existing single-dataset execution block)
+                # SINGLE DATASET MODE
+                non_id_cols = [c for c in schema_summary['columns'] if not (c.lower().endswith("_id") or c.lower() == "id")]
+                if not non_id_cols:
+                    non_id_cols = schema_summary['columns']
+
+                dimensions = resolve_columns(raw_dims, schema_summary['columns'])
+                dimensions = [d for d in dimensions if not (d.lower().endswith("_id") or d.lower() == "id")]
+                
+                if not dimensions:
+                    prompt_lower = payload.query.lower()
+                    matched = [c for c in non_id_cols if c.lower() in prompt_lower]
+                    dimensions = matched if matched else [non_id_cols[0]]
+
+                metric_col = None
+                if raw_metric:
+                    resolved_m = resolve_columns([raw_metric], schema_summary['columns'])
+                    if resolved_m:
+                        metric_col = resolved_m[0]
+                
+                if not metric_col:
+                    metric_col = next(
+                        (c for c in schema_summary['columns'] if any(m in c.lower() for m in ["revenue", "sales", "amount", "total", "price", "profit"])),
+                        None
+                    )
+
+                escaped_dims = [f'"{d}"' for d in dimensions]
+                dim_clause = ", ".join(escaped_dims)
+                where_clause = " AND ".join([f"{d} IS NOT NULL" for d in escaped_dims])
+
+                if metric_col and metric_col not in dimensions:
+                    sql_query = f"""
+                        SELECT {dim_clause}, ROUND({agg_func}("{metric_col}"), 2) AS total_{metric_col}
+                        FROM active_dataset
+                        WHERE {where_clause}
+                        GROUP BY {dim_clause}
+                        ORDER BY total_{metric_col} DESC
+                    """
+                else:
+                    sql_query = f"""
+                        SELECT {dim_clause}, COUNT(*) AS record_count
+                        FROM active_dataset
+                        WHERE {where_clause}
+                        GROUP BY {dim_clause}
+                        ORDER BY record_count DESC
+                    """
             
             raw_res = conn.execute(sql_query).df()
 
