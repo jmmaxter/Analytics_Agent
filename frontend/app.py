@@ -439,7 +439,57 @@ def generate_suggested_questions(summary: Optional[Dict[str, Any]]) -> Dict[str,
     }
 
 # -----------------------------------------------------------------------------
-# Sidebar: Dataset Management & Backend Status
+# Comprehensive Analytics & BI Question Catalog
+# -----------------------------------------------------------------------------
+BI_QUESTION_CATALOG = {
+    "📊 Metric Summaries": [
+        "What is the total revenue and overall profit across all records?",
+        "Show me total units sold, total revenue, and average unit cost.",
+        "What is the total discount applied and average order transaction value?",
+        "Provide a summary of total revenue, profit margins, and average customer ratings."
+    ],
+    "🔍 Breakdown & Grouping": [
+        "What is total sales by product category and region?",
+        "Show me total revenue and profit broken down by customer segment and payment method.",
+        "What is the average transaction value and total units sold by store location?",
+        "Show total shipping cost and average transit time by hub region.",
+        "Break down revenue by marketing channel and sales rep."
+    ],
+    "🏆 Top N & Ranking": [
+        "Show the top 5 product categories by total revenue.",
+        "What are the top 3 store locations by profit?",
+        "List the top 10 transactions by revenue amount.",
+        "Show the top 5 sales representatives by total units sold.",
+        "What are the bottom 3 product categories by profit margin?"
+    ],
+    "📈 Period-over-Period": [
+        "Calculate Month-over-Month revenue growth.",
+        "Show Year-over-Year performance trends for total profit.",
+        "What is the quarterly breakdown of sales and transaction counts?",
+        "Compare monthly revenue against the previous period across all regions."
+    ],
+    "💼 Cross-Entity Performance": [
+        "Analyze transaction performance and average rating by customer segment.",
+        "Show sales performance and transaction count by marketing channel.",
+        "Compare store square footage efficiency against total revenue generated.",
+        "Evaluate sales rep performance across different store locations."
+    ],
+    "🧹 Data Quality & Profiling": [
+        "Check for missing values or null records across the active dataset.",
+        "Show record counts, unique values, and summary statistics for key columns.",
+        "Identify any anomalous transactions with zero or negative revenue.",
+        "Verify referential integrity and missing foreign keys across star schema tables."
+    ],
+    "🥧 Share of Total & Contribution": [
+        "What percentage of total profit does each customer segment contribute?",
+        "Show the revenue contribution percentage of each product category.",
+        "What share of total sales does each store region account for?",
+        "Calculate the percentage contribution of each marketing channel to total revenue."
+    ]
+}
+
+# -----------------------------------------------------------------------------
+# Sidebar: Dataset Management, Backend Status & BI Catalog
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.title("📂 Dataset Workspace")
@@ -489,7 +539,7 @@ with st.sidebar:
             "Upload Fact & Dimension Tables (Multiple)",
             type=["csv", "xlsx", "xls"],
             accept_multiple_files=True,
-            help="Upload multiple related tables (e.g., Fact shipments and Dim carriers)."
+            help="Upload multiple related tables (e.g., Fact transactions and Dim products)."
         )
         
         if uploaded_files and st.session_state.session_id is None:
@@ -513,6 +563,20 @@ with st.sidebar:
         
         st.caption(f"**Active Session ID:** `{st.session_state.session_id[:8]}...`")
         
+        # --- BI Question Catalog Section (Enabled when dataset is active) ---
+        st.divider()
+        st.markdown("### 📚 BI Question Catalog")
+        st.caption("Select a category and click any professional query to run it instantly.")
+        
+        selected_category = st.selectbox("Analysis Category", list(BI_QUESTION_CATALOG.keys()), key="sidebar_catalog_category")
+        
+        if selected_category:
+            for question in BI_QUESTION_CATALOG[selected_category]:
+                if st.button(question, key=f"cat_btn_{hash(question)}", use_container_width=True):
+                    st.session_state.preset_query = question
+                    st.rerun()
+
+        st.divider()
         if st.button("🔴 Clear Dataset & Reset", use_container_width=True):
             if clear_backend_session(st.session_state.session_id):
                 st.session_state.session_id = None
