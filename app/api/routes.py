@@ -2,6 +2,7 @@ import os
 import json
 import time
 import tempfile
+from collections import deque
 import duckdb
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.schemas.api import DatasetSummary, QueryRequest, QueryResponse
@@ -37,6 +38,51 @@ def resolve_columns(requested_cols: list[str] | str, available_cols: list[str]) 
     # Filter out primary keys if multiple columns exist
     filtered = [c for c in resolved if not (c.lower().endswith("_id") or c.lower() == "id")]
     return filtered if filtered else (resolved if resolved else [available_cols[0]])
+
+
+def find_join_path(tables_meta: dict, start_table: str, target_table: str) -> list[tuple[str, str, str]]:
+    """
+    Dataset-agnostic BFS shortest-path finder between two tables using shared *_id keys.
+    Returns a list of (left_table, right_table, join_key) tuples.
+    """
+    if start_table == target_table:
+        return []
+
+    queue = deque([(start_table, [])])
+    visited = {start_table}
+
+    while queue:
+        curr_table, path = queue.popleft()
+        curr_cols = {
+            c.lower(): c
+            for c in tables_meta[curr_table]["columns"]
+            if c.lower().endswith("_id") or c.lower() == "id"
+        }
+
+        for next_table, meta in tables_meta.items():
+            if next_table in visited:
+                continue
+            next_cols = {
+                c.lower(): c
+                for c in meta["columns"]
+                if c.lower().endswith("_id") or c.lower() == "id"
+            }
+
+            # Find shared ID columns between curr_table and next_table
+            shared_keys = set(curr_cols.keys()) & set(next_cols.keys())
+            if shared_keys:
+                # Prefer specific foreign keys over generic 'id' or 'user_id'
+                preferred_key = sorted(
+                    shared_keys,
+                    key=lambda k: (k == "id", k == "user_id", len(k))
+                )[0]
+                new_path = path + [(curr_table, next_table, curr_cols[preferred_key])]
+                if next_table == target_table:
+                    return new_path
+                visited.add(next_table)
+                queue.append((next_table, new_path))
+
+    return []
 
 
 @router.post("/dataset/upload", response_model=DatasetSummary, status_code=201)
@@ -86,10 +132,19 @@ async def execute_query(payload: QueryRequest):
     db_path = session["db_path"]
     schema_summary = session["summary"]
 
+    # Build combined schema context for multi-table or single-table routing
+    tables_meta = schema_summary.get("tables", {})
+    if len(tables_meta) > 1:
+        schema_context_str = {tname: meta["columns"] for tname, meta in tables_meta.items()}
+        all_columns_flat = [col for meta in tables_meta.values() for col in meta["columns"]]
+    else:
+        schema_context_str = schema_summary["columns"]
+        all_columns_flat = schema_summary["columns"]
+
     # 1. Routing Agent Execution
     try:
         plan = await analytics_agent.run(
-            user_prompt=f"User Query: {payload.query}\nSchema Context: {schema_summary['columns']}"
+            user_prompt=f"User Query: {payload.query}\nSchema Context: {schema_context_str}"
         )
         plan_data = getattr(plan, "output", getattr(plan, "data", plan))
 
@@ -107,7 +162,7 @@ async def execute_query(payload: QueryRequest):
 
     except Exception:
         # Fallback to rule engine if LLM call or JSON parsing fails
-        fallback_plan = heuristic_fallback(payload.query, schema_summary['columns'])
+        fallback_plan = heuristic_fallback(payload.query, all_columns_flat)
         tool_name = fallback_plan.tool_name.value if hasattr(fallback_plan.tool_name, "value") else str(fallback_plan.tool_name)
         tool_args = fallback_plan.tool_args
 
@@ -121,96 +176,165 @@ async def execute_query(payload: QueryRequest):
             raw_res = conn.execute("SELECT COUNT(*) as total_records FROM active_dataset").df()
 
         # --- TOOL 2: Single Metric Aggregation ---
-        elif tool_name == "aggregate_metric":
-            metric_col = tool_args.get("metric_column", schema_summary['columns'][0])
-            agg_func = tool_args.get("aggregation", "SUM").upper()
+        elif tool_name in ["aggregate_metric", "aggregate_metrics"]:
+            metric_col = tool_args.get("metric_column") or tool_args.get("aggregate_column") or schema_summary['columns'][0]
+            agg_func = str(tool_args.get("aggregation") or tool_args.get("aggregation_function", "SUM")).upper()
             if agg_func == "COUNT_DISTINCT":
                 sql_query = f'SELECT COUNT(DISTINCT "{metric_col}") AS distinct_{metric_col} FROM active_dataset'
             else:
                 sql_query = f'SELECT ROUND({agg_func}("{metric_col}"), 2) AS result_{metric_col} FROM active_dataset'
             raw_res = conn.execute(sql_query).df()
 
-        # --- TOOL 3: Multi-Dimensional Group By (Multi-Table Star Schema Support) ---
+        # --- TOOL 3: Multi-Dimensional Group By (Dataset-Agnostic Multi-Table Support) ---
         elif tool_name == "group_by_analysis":
             raw_dims = tool_args.get("group_by_columns", [])
             raw_metric = tool_args.get("metric_column")
-            agg_func = tool_args.get("aggregation", "SUM").upper()
+            agg_func = str(tool_args.get("aggregation") or tool_args.get("agg_func", "SUM")).upper()
 
-            tables_meta = schema_summary.get("tables", {})
-            
             if len(tables_meta) > 1:
-                fact_table = next((t for t in tables_meta.keys() if "fact" in t), list(tables_meta.keys())[0])
-                dim_tables = [t for t in tables_meta.keys() if t != fact_table]
-                
                 query_lower = payload.query.lower()
-                resolved_dimensions = []
-                joined_tables = set()
+
+                # 1. Identify requested metric & pick the right Fact table dynamically
+                metric_keywords = ["line_item_total", "revenue", "sales", "amount", "total", "price", "profit", "quantity", "units"]
+                if raw_metric and str(raw_metric).lower() in query_lower:
+                    metric_keywords.insert(0, str(raw_metric).lower())
+
+                best_fact = None
+                best_metric_col = None
+                best_score = -1
+
+                for tname, tmeta in tables_meta.items():
+                    score = 0
+                    matched_m = None
+                    if "fact" in tname.lower():
+                        score += 2
+                    for col, dtype in tmeta["schema_types"].items():
+                        col_l = col.lower()
+                        is_numeric = any(nt in dtype.upper() for nt in ["INT", "DOUBLE", "FLOAT", "DECIMAL", "NUMERIC", "BIGINT"])
+                        if is_numeric and not col_l.endswith("_id") and col_l != "id":
+                            if any(mk in col_l for mk in metric_keywords):
+                                score += 5
+                                if not matched_m:
+                                    matched_m = col
+                            elif not matched_m:
+                                matched_m = col
+                    # Boost fact table if query mentions words related to the table domain
+                    if any(w in query_lower for w in ["sale", "sales", "transaction", "purchase", "product", "listing", "order"]) and "transaction" in tname.lower():
+                        score += 10
+                    if any(w in query_lower for w in ["job", "application", "applicant", "hire", "hiring", "salary"]) and "application" in tname.lower():
+                        score += 10
+
+                    if score > best_score:
+                        best_score = score
+                        best_fact = tname
+                        best_metric_col = matched_m
+
+                fact_table = best_fact or list(tables_meta.keys())[0]
+
+                # 2. Check if a time-based grouping (monthly, yearly, daily, weekly) is requested
+                time_trunc_unit = None
+                time_label = None
+                time_fmt = "%Y-%m"
+                if "monthly" in query_lower or "by month" in query_lower or "per month" in query_lower:
+                    time_trunc_unit, time_label, time_fmt = "month", "sales_month", "%Y-%m"
+                elif "yearly" in query_lower or "annual" in query_lower or "by year" in query_lower:
+                    time_trunc_unit, time_label, time_fmt = "year", "sales_year", "%Y"
+                elif "weekly" in query_lower or "by week" in query_lower:
+                    time_trunc_unit, time_label, time_fmt = "week", "sales_week", "%Y-%m-%d"
+                elif "daily" in query_lower or "by day" in query_lower:
+                    time_trunc_unit, time_label, time_fmt = "day", "sales_day", "%Y-%m-%d"
+
+                dim_selects = []
+                dim_group_by = []
+                where_conditions = []
+                joined_tables = {fact_table}
                 join_clauses = []
 
-                # Map business terms to their respective dimension tables, columns, and foreign keys
-                dim_mapping = {
-                    "product_category": ("dim_products", "Product_Category", "Product_ID"),
-                    "category": ("dim_products", "Product_Category", "Product_ID"),
-                    "region": ("dim_stores", "Region", "Store_ID"),
-                    "store_location": ("dim_stores", "Store_Location", "Store_ID"),
-                    "customer_segment": ("dim_customers", "Customer_Segment", "Customer_ID"),
-                    "sales_rep": ("dim_sales_rep", "Sales_Rep", "Rep_ID"),
-                    "marketing_channel": ("dim_sales_rep", "Marketing_Channel", "Rep_ID"),
-                }
+                if time_trunc_unit:
+                    date_cols = [
+                        c for c, t in tables_meta[fact_table]["schema_types"].items()
+                        if any(dt in t.upper() for dt in ["DATE", "TIME"]) or "date" in c.lower() or "at" in c.lower()
+                    ]
+                    if date_cols:
+                        dcol = date_cols[0]
+                        time_expr = f"STRFTIME(DATE_TRUNC('{time_trunc_unit}', TRY_CAST({fact_table}.\"{dcol}\" AS TIMESTAMP)), '{time_fmt}')"
+                        dim_selects.append(f"{time_expr} AS {time_label}")
+                        dim_group_by.append(time_expr)
+                        where_conditions.append(f'TRY_CAST({fact_table}."{dcol}" AS TIMESTAMP) IS NOT NULL')
 
-                # Check prompt or raw_dims for matching dimensions
-                search_targets = [query_lower]
+                # 3. Dynamically resolve target dimension tables & columns from query + raw_dims
+                search_terms = [query_lower]
                 if isinstance(raw_dims, list):
-                    search_targets.extend([str(d).lower() for d in raw_dims])
+                    search_terms.extend([str(d).lower().replace("_", " ") for d in raw_dims])
                 elif isinstance(raw_dims, str):
-                    search_targets.append(raw_dims.lower())
+                    search_terms.append(raw_dims.lower().replace("_", " "))
 
-                for term, (dtable, dcol, fkey) in dim_mapping.items():
-                    if any(term in target for target in search_targets):
-                        if dtable in tables_meta and (dtable, dcol) not in resolved_dimensions:
-                            resolved_dimensions.append((dtable, dcol))
-                            if dtable not in joined_tables and dtable != fact_table:
-                                joined_tables.add(dtable)
-                                join_clauses.append(f'JOIN {dtable} ON {fact_table}."{fkey}" = {dtable}."{fkey}"')
+                resolved_dimensions = []
+                for tname, tmeta in tables_meta.items():
+                    if tname == fact_table:
+                        continue
+                    # Match table name tokens (e.g., "listing" matches "dim_listing")
+                    clean_tname = tname.lower().replace("dim_", "").replace("fact_", "").replace("_", " ")
+                    table_mentioned = clean_tname in query_lower or any(clean_tname in st for st in search_terms)
 
-                # Fallback if no specific dimension was matched
+                    text_cols = [
+                        c for c, dtype in tmeta["schema_types"].items()
+                        if ("VARCHAR" in dtype.upper() or "TEXT" in dtype.upper())
+                        and not c.lower().endswith("_id")
+                        and not any(skip in c.lower() for skip in ["email", "website", "url", "date", "_at"])
+                    ]
+
+                    for col in text_cols:
+                        col_clean = col.lower().replace("_", " ")
+                        if col_clean in query_lower or any(col_clean == st for st in search_terms):
+                            if (tname, col) not in resolved_dimensions:
+                                resolved_dimensions.append((tname, col))
+
+                    # If the dimension table was explicitly named (e.g. "product listing") but no specific column matched, pick its primary descriptor (e.g. 'title' or 'name')
+                    if table_mentioned and not any(dt == tname for dt, _ in resolved_dimensions) and text_cols:
+                        primary_desc = next((c for c in text_cols if any(k in c.lower() for k in ["title", "name", "category", "type"])), text_cols[0])
+                        resolved_dimensions.append((tname, primary_desc))
+
+                # Fallback if still no dimensions found: pick the first reachable dimension table
                 if not resolved_dimensions:
-                    dtable = dim_tables[0]
-                    text_cols = [c for c, t in tables_meta[dtable]["schema_types"].items() if "VARCHAR" in t.upper() or "TEXT" in t.upper()]
-                    dcol = text_cols[0] if text_cols else tables_meta[dtable]["columns"][1]
-                    fkey = next((c for c in tables_meta[fact_table]["columns"] if c in tables_meta[dtable]["columns"] or c.endswith("_id")), f"{dtable.replace('dim_', '')}_id")
-                    resolved_dimensions.append((dtable, dcol))
-                    join_clauses.append(f'JOIN {dtable} ON {fact_table}."{fkey}" = {dtable}."{fkey}"')
+                    for tname, tmeta in tables_meta.items():
+                        if tname != fact_table and find_join_path(tables_meta, fact_table, tname):
+                            text_cols = [c for c, dtype in tmeta["schema_types"].items() if "VARCHAR" in dtype.upper() and not c.lower().endswith("_id")]
+                            if text_cols:
+                                resolved_dimensions.append((tname, text_cols[0]))
+                                break
 
-                dim_selects = [f'{dt}."{col}"' for dt, col in resolved_dimensions]
-                dim_group_by = [f'{dt}."{col}"' for dt, col in resolved_dimensions]
-                where_not_null = " AND ".join([f'{dt}."{col}" IS NOT NULL' for dt, col in resolved_dimensions])
+                # 4. Build BFS multi-hop JOIN clauses for every resolved dimension table
+                for dtable, dcol in resolved_dimensions:
+                    path = find_join_path(tables_meta, fact_table, dtable)
+                    if not path and dtable != fact_table:
+                        continue
+                    for left_t, right_t, join_key in path:
+                        if right_t not in joined_tables:
+                            joined_tables.add(right_t)
+                            join_clauses.append(f'JOIN {right_t} ON {left_t}."{join_key}" = {right_t}."{join_key}"')
+                    dim_selects.append(f'{dtable}."{dcol}"')
+                    dim_group_by.append(f'{dtable}."{dcol}"')
+                    where_conditions.append(f'{dtable}."{dcol}" IS NOT NULL')
 
-                # Resolve metrics (supporting single or multi-metric queries like revenue and profit)
-                fact_cols = tables_meta[fact_table]["columns"]
-                select_metrics_clause = []
-                
-                if "profit" in query_lower:
-                    select_metrics_clause.append(f'ROUND({agg_func}({fact_table}."Profit"), 2) AS total_profit')
-                if "revenue" in query_lower or "sales" in query_lower:
-                    select_metrics_clause.append(f'ROUND({agg_func}({fact_table}."Revenue"), 2) AS total_revenue')
-                if "unit" in query_lower:
-                    select_metrics_clause.append(f'ROUND({agg_func}({fact_table}."Units_Sold"), 2) AS total_units_sold')
+                # 5. Build Metric SELECT clause
+                if best_metric_col:
+                    metric_alias = f"total_{best_metric_col.lower()}"
+                    metrics_sql = f'ROUND({agg_func}({fact_table}."{best_metric_col}"), 2) AS {metric_alias}'
+                else:
+                    metric_alias = "total_records"
+                    metrics_sql = "COUNT(*) AS total_records"
 
-                if not select_metrics_clause:
-                    metric_col = next((c for c in fact_cols if any(m in c.lower() for m in ["revenue", "profit", "sales", "amount"])), fact_cols[-1])
-                    select_metrics_clause.append(f'ROUND({agg_func}({fact_table}."{metric_col}"), 2) AS total_{metric_col.lower()}')
-
-                metrics_sql = ", ".join(select_metrics_clause)
-                primary_metric_alias = select_metrics_clause[0].split(" AS ")[1]
+                where_sql = f"WHERE {' AND '.join(where_conditions)}" if where_conditions else ""
+                order_sql = f"{dim_group_by[0]} ASC, {metric_alias} DESC" if time_trunc_unit else f"{metric_alias} DESC"
 
                 sql_query = f"""
                     SELECT {", ".join(dim_selects)}, {metrics_sql}
                     FROM {fact_table}
                     {" ".join(join_clauses)}
-                    WHERE {where_not_null}
+                    {where_sql}
                     GROUP BY {", ".join(dim_group_by)}
-                    ORDER BY {primary_metric_alias} DESC
+                    ORDER BY {order_sql}
                 """
             else:
                 # SINGLE DATASET MODE
@@ -262,7 +386,7 @@ async def execute_query(payload: QueryRequest):
             raw_res = conn.execute(sql_query).df()
 
         # --- TOOL 4: Top N Leaderboard Ranking ---
-        elif tool_name == "top_n_ranking":
+        elif tool_name in ["top_n_ranking", "sort_and_rank"]:
             entity_col = tool_args.get("entity_column", schema_summary['columns'][0])
             metric_col = tool_args.get("metric_column", schema_summary['columns'][-1])
             n_limit = tool_args.get("limit", 5)
@@ -373,6 +497,7 @@ async def clear_session(session_id: str):
     if not success:
         raise HTTPException(status_code=404, detail="Session not found.")
     return {"message": "Session cleared successfully."}
+
 
 @router.post("/dataset/upload-multi", response_model=DatasetSummary, status_code=201)
 async def upload_multi_dataset(files: list[UploadFile] = File(...)):
