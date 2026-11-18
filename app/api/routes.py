@@ -251,10 +251,17 @@ async def execute_query(payload: QueryRequest):
                 join_clauses = []
 
                 if time_trunc_unit:
+                    # 1. Prioritize columns with actual DATE/TIMESTAMP DuckDB types
                     date_cols = [
                         c for c, t in tables_meta[fact_table]["schema_types"].items()
-                        if any(dt in t.upper() for dt in ["DATE", "TIME"]) or "date" in c.lower() or "at" in c.lower()
+                        if any(dt in t.upper() for dt in ["DATE", "TIME"])
                     ]
+                    # 2. Fallback to columns explicitly named *_date, *_at, or timestamp
+                    if not date_cols:
+                        date_cols = [
+                            c for c in tables_meta[fact_table]["columns"]
+                            if c.lower().endswith("_date") or c.lower().endswith("_at") or "date" in c.lower() or "timestamp" in c.lower()
+                        ]
                     if date_cols:
                         dcol = date_cols[0]
                         time_expr = f"STRFTIME(DATE_TRUNC('{time_trunc_unit}', TRY_CAST({fact_table}.\"{dcol}\" AS TIMESTAMP)), '{time_fmt}')"
