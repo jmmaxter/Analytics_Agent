@@ -198,10 +198,11 @@ def clear_backend_session(session_id: str) -> bool:
 # -----------------------------------------------------------------------------
 # Dynamic Visualization Renderer Engine
 # -----------------------------------------------------------------------------
-def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[str, Any]):
+def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[str, Any], chart_uid: str = "0"):
     """
-    Safely parses raw data, renders vibrantly colored interactive Plotly charts 
-    (supporting single or multiple numeric metrics), and provides HTML export capabilities.
+    Safely parses raw data, automatically selects the most readable Plotly chart type
+    based on data shape & cardinality (e.g., Horizontal Top-N Bar or Treemap for many categories,
+    Line Chart for time series), provides an interactive chart-type switcher, and supports HTML export.
     """
     if isinstance(raw_data, str):
         try:
@@ -228,114 +229,224 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
             pass
 
     num_cols = df.select_dtypes(include=["number"]).columns.tolist()
-    cat_cols = [c for c in df.columns if c not in num_cols]
     date_cols = [c for c in df.columns if any(k in c.lower() for k in ["date", "time", "year", "month", "day", "period"])]
+    cat_cols = [c for c in df.columns if c not in num_cols and c not in date_cols]
 
     if not cat_cols and not date_cols and len(df.columns) >= 1:
         cat_cols = [df.columns[0]]
 
-    # If we have multiple numeric metrics (e.g. cost and transit time), render a chart for each metric
+    # Multi-metric handling
     if len(num_cols) > 1 and cat_cols:
         st.markdown("### 📊 Multi-Metric Visual Breakdown")
-        for num_col in num_cols:
-            fig = px.bar(
-                df, 
-                x=cat_cols[0], 
-                y=num_col,
-                color=cat_cols[0],
-                title=f"📊 {num_col.replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}",
-                text_auto=True,
-                template="plotly_white",
-                color_discrete_sequence=px.colors.qualitative.Safe
-            )
-            fig.update_layout(
-                showlegend=False,
-                margin=dict(l=10, r=10, t=40, b=10),
-                xaxis_tickangle=-35 if len(df) > 5 else 0
-            )
-            
+        for idx, num_col in enumerate(num_cols):
+            plot_df = df.sort_values(by=num_col, ascending=False).head(15) if len(df) > 15 else df
+            is_high_card = len(df) > 12
+            if is_high_card:
+                fig = px.bar(
+                    plot_df.iloc[::-1],
+                    x=num_col,
+                    y=cat_cols[0],
+                    orientation="h",
+                    color=num_col,
+                    title=f"📊 Top {len(plot_df)} {cat_cols[0].replace('_', ' ').title()} by {num_col.replace('_', ' ').title()}",
+                    text_auto=True,
+                    template="plotly_white",
+                    color_continuous_scale=px.colors.sequential.Viridis
+                )
+            else:
+                fig = px.bar(
+                    plot_df,
+                    x=cat_cols[0],
+                    y=num_col,
+                    color=cat_cols[0],
+                    title=f"📊 {num_col.replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}",
+                    text_auto=True,
+                    template="plotly_white",
+                    color_discrete_sequence=px.colors.qualitative.Safe
+                )
+                fig.update_layout(showlegend=False)
+
+            fig.update_layout(margin=dict(l=10, r=10, t=45, b=10))
             plotly_config = {
                 "displayModeBar": True,
                 "displaylogo": False,
                 "modeBarButtonsToRemove": ["lasso2d", "select2d"],
-                "toImageButtonOptions": {
-                    "format": "png",
-                    "filename": f"analytics_chart_{num_col}_{int(time.time())}",
-                    "scale": 2
-                }
+                "toImageButtonOptions": {"format": "png", "filename": f"analytics_chart_{num_col}_{int(time.time())}", "scale": 2}
             }
-            
             chart_col, export_col = st.columns([4, 1])
             with chart_col:
-                st.plotly_chart(fig, use_container_width=True, config=plotly_config)
+                st.plotly_chart(fig, use_container_width=True, config=plotly_config, key=f"chart_{chart_uid}_{idx}")
             with export_col:
                 st.markdown("<br>", unsafe_allow_html=True)
                 html_data = fig.to_html(include_plotlyjs="cdn")
                 st.download_button(
-                    label=f"📥 Export HTML",
+                    label="📥 Export HTML",
                     data=html_data,
                     file_name=f"chart_{num_col}_{int(time.time())}.html",
                     mime="text/html",
-                    help=f"Download interactive HTML chart for {num_col}",
                     use_container_width=True,
-                    key=f"dl_{num_col}"
+                    key=f"dl_{chart_uid}_{num_col}"
                 )
         return
 
-    # Standard single-metric rendering logic for existing views
+    # Single-metric adaptive chart selection
+    metric_col = num_cols[0] if num_cols else (df.columns[1] if len(df.columns) >= 2 else None)
+    primary_cat = cat_cols[0] if cat_cols else None
+    secondary_cat = cat_cols[1] if len(cat_cols) >= 2 else None
+    primary_date = date_cols[0] if date_cols else None
+
+    if not metric_col:
+        return
+
+    row_count = len(df)
+    unique_cats = df[primary_cat].nunique() if primary_cat else 0
+
+    # Determine optimal default visualization based on data shape
+    if primary_date and primary_cat:
+        default_chart = "Line Trend"
+    elif primary_date:
+        default_chart = "Line Trend"
+    elif unique_cats > 12:
+        default_chart = "Horizontal Bar (Top N)"
+    elif unique_cats <= 6 and not secondary_cat:
+        default_chart = "Donut / Pie"
+    else:
+        default_chart = "Vertical Bar"
+
+    chart_options = ["Auto (Recommended)", "Horizontal Bar (Top N)", "Treemap (All Categories)", "Vertical Bar", "Line Trend", "Donut / Pie"]
+    ctrl_col1, ctrl_col2 = st.columns([2, 2])
+    with ctrl_col1:
+        chosen_mode = st.selectbox(
+            f"Chart Visualization (Recommended: {default_chart})",
+            chart_options,
+            index=0,
+            key=f"chart_mode_{chart_uid}"
+        )
+    active_chart = default_chart if chosen_mode == "Auto (Recommended)" else chosen_mode
+
+    top_n = row_count
+    if active_chart == "Horizontal Bar (Top N)" and row_count > 10:
+        with ctrl_col2:
+            top_n = st.slider(
+                "Show Top N Items",
+                min_value=5,
+                max_value=min(50, row_count),
+                value=min(15, row_count),
+                step=5,
+                key=f"top_n_{chart_uid}"
+            )
+
     fig = None
 
-    if len(cat_cols) >= 2 and num_cols:
+    if active_chart == "Horizontal Bar (Top N)" and primary_cat:
+        plot_df = df.sort_values(by=metric_col, ascending=False).head(top_n)
+        # Reverse order so highest bar renders at the top
+        plot_df_asc = plot_df.iloc[::-1]
+        title_prefix = f"Top {len(plot_df)} of {unique_cats}" if unique_cats > top_n else f"All {unique_cats}"
         fig = px.bar(
-            df, 
-            x=cat_cols[0], 
-            y=num_cols[0], 
-            color=cat_cols[1], 
-            barmode="group",
-            title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()} & {cat_cols[1].replace('_', ' ').title()}",
+            plot_df_asc,
+            x=metric_col,
+            y=primary_cat,
+            orientation="h",
+            color=metric_col,
+            title=f"📊 {metric_col.replace('_', ' ').title()} by {primary_cat.replace('_', ' ').title()} ({title_prefix})",
             text_auto=True,
             template="plotly_white",
-            color_discrete_sequence=px.colors.qualitative.Prism
+            color_continuous_scale=px.colors.sequential.Tealgrn
         )
-    elif cat_cols and num_cols:
-        fig = px.bar(
-            df, 
-            x=cat_cols[0], 
-            y=num_cols[0], 
-            color=cat_cols[0],
-            title=f"📊 {num_cols[0].replace('_', ' ').title()} by {cat_cols[0].replace('_', ' ').title()}",
-            text_auto=True,
+        fig.update_layout(height=max(420, len(plot_df) * 28), coloraxis_showscale=False)
+
+    elif active_chart == "Treemap (All Categories)" and primary_cat:
+        path_cols = [primary_cat, secondary_cat] if secondary_cat else [primary_cat]
+        plot_df = df[df[metric_col] > 0]
+        if not plot_df.empty:
+            fig = px.treemap(
+                plot_df,
+                path=path_cols,
+                values=metric_col,
+                color=metric_col,
+                title=f"🗺️ Proportional Treemap: {metric_col.replace('_', ' ').title()} across {primary_cat.replace('_', ' ').title()}",
+                template="plotly_white",
+                color_continuous_scale=px.colors.sequential.Blues
+            )
+            fig.update_traces(textinfo="label+value+percent root")
+
+    elif active_chart == "Line Trend" and (primary_date or primary_cat):
+        x_axis = primary_date if primary_date else primary_cat
+        plot_df = df.sort_values(by=x_axis)
+        if primary_date and primary_cat:
+            # Limit legend clutter to top 8 categories by total metric
+            top_entities = (
+                plot_df.groupby(primary_cat)[metric_col]
+                .sum()
+                .nlargest(8)
+                .index.tolist()
+            )
+            plot_df = plot_df[plot_df[primary_cat].isin(top_entities)]
+            fig = px.line(
+                plot_df,
+                x=x_axis,
+                y=metric_col,
+                color=primary_cat,
+                markers=True,
+                title=f"📈 Trend of {metric_col.replace('_', ' ').title()} over {x_axis.replace('_', ' ').title()} (Top {len(top_entities)})",
+                template="plotly_white"
+            )
+        else:
+            fig = px.line(
+                plot_df,
+                x=x_axis,
+                y=metric_col,
+                markers=True,
+                title=f"📈 Trend of {metric_col.replace('_', ' ').title()} over {x_axis.replace('_', ' ').title()}",
+                template="plotly_white"
+            )
+            fig.update_traces(line=dict(width=3, color="#636EFA"))
+
+    elif active_chart == "Donut / Pie" and primary_cat:
+        plot_df = df.sort_values(by=metric_col, ascending=False).head(15)
+        fig = px.pie(
+            plot_df,
+            names=primary_cat,
+            values=metric_col,
+            hole=0.45,
+            title=f"🍩 Share of {metric_col.replace('_', ' ').title()} by {primary_cat.replace('_', ' ').title()}",
             template="plotly_white",
             color_discrete_sequence=px.colors.qualitative.Safe
         )
-        fig.update_layout(showlegend=False)
-    elif date_cols and num_cols:
-        fig = px.line(
-            df, 
-            x=date_cols[0], 
-            y=num_cols[0], 
-            markers=True,
-            title=f"📈 Trend of {num_cols[0].replace('_', ' ').title()} over {date_cols[0].replace('_', ' ').title()}",
-            template="plotly_white"
-        )
-        fig.update_traces(line=dict(width=3, color="#636EFA"))
-    elif len(df.columns) >= 2:
-        fig = px.bar(
-            df, 
-            x=df.columns[0], 
-            y=df.columns[1], 
-            color=df.columns[0],
-            text_auto=True,
-            template="plotly_white",
-            color_discrete_sequence=px.colors.qualitative.Bold
-        )
-        fig.update_layout(showlegend=False)
+        fig.update_traces(textposition="inside", textinfo="percent+label")
+
+    else:
+        # Vertical Bar fallback
+        x_col = primary_cat or primary_date or df.columns[0]
+        if secondary_cat:
+            fig = px.bar(
+                df.head(30),
+                x=x_col,
+                y=metric_col,
+                color=secondary_cat,
+                barmode="group",
+                title=f"📊 {metric_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()} & {secondary_cat.replace('_', ' ').title()}",
+                text_auto=True,
+                template="plotly_white",
+                color_discrete_sequence=px.colors.qualitative.Prism
+            )
+        else:
+            fig = px.bar(
+                df.head(30),
+                x=x_col,
+                y=metric_col,
+                color=x_col,
+                title=f"📊 {metric_col.replace('_', ' ').title()} by {x_col.replace('_', ' ').title()}",
+                text_auto=True,
+                template="plotly_white",
+                color_discrete_sequence=px.colors.qualitative.Safe
+            )
+            fig.update_layout(showlegend=False)
+        fig.update_layout(xaxis_tickangle=-35 if len(df) > 5 else 0)
 
     if fig is not None:
-        fig.update_layout(
-            margin=dict(l=10, r=10, t=40, b=10),
-            xaxis_tickangle=-35 if len(df) > 5 else 0
-        )
+        fig.update_layout(margin=dict(l=10, r=10, t=45, b=10))
         
         plotly_config = {
             "displayModeBar": True,
@@ -350,7 +461,7 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
 
         chart_col, export_col = st.columns([4, 1])
         with chart_col:
-            st.plotly_chart(fig, use_container_width=True, config=plotly_config)
+            st.plotly_chart(fig, use_container_width=True, config=plotly_config, key=f"plotly_{chart_uid}")
         with export_col:
             st.markdown("<br>", unsafe_allow_html=True)
             html_data = fig.to_html(include_plotlyjs="cdn")
@@ -360,7 +471,8 @@ def render_analytics_chart(raw_data: Any, selected_tool: str, tool_args: Dict[st
                 file_name=f"chart_{int(time.time())}.html",
                 mime="text/html",
                 help="Download interactive HTML dashboard component",
-                use_container_width=True
+                use_container_width=True,
+                key=f"export_btn_{chart_uid}"
             )
             st.caption("📄 **PDF Tip:** Click **Export HTML**, open the file in your browser, and press `Ctrl+P` (or `Cmd+P`) → **Save as PDF**.")
 
@@ -651,7 +763,7 @@ else:
     if st.session_state.query_history:
         st.markdown("### 📈 Analytical Output")
         
-        for item in st.session_state.query_history:
+        for idx, item in enumerate(st.session_state.query_history):
             with st.container(border=True):
                 st.subheader(f"❓ {item['original_query']}")
                 
@@ -672,7 +784,6 @@ else:
                 
                 # Handle stringified JSON if backend returns string instead of list
                 if isinstance(raw_data, str):
-                    import json
                     try:
                         raw_data = json.loads(raw_data)
                     except Exception:
@@ -682,7 +793,8 @@ else:
                     render_analytics_chart(
                         raw_data=raw_data,
                         selected_tool=item.get("selected_tool", ""),
-                        tool_args=item.get("tool_args", {})
+                        tool_args=item.get("tool_args", {}),
+                        chart_uid=f"hist_{idx}"
                     )
                 else:
                     st.warning("⚠️ No tabular `raw_data` received in payload to render a chart.")
