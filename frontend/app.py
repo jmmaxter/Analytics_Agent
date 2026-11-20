@@ -798,6 +798,7 @@ else:
                     )
                 else:
                     st.warning("⚠️ No tabular `raw_data` received in payload to render a chart.")
+
                 
                 # 3. Tabular Data View
                 if raw_data:
